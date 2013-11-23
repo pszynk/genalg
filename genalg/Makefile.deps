@@ -1,0 +1,24 @@
+/griewank.o: src/griewank.c src/griewank.h src/globals.h src/types.h \
+ src/myerr.h
+/individual.o: src/individual.c src/individual.h src/types.h \
+ src/evaluation.h src/globals.h src/myerr.h src/chromosome.h src/bitvec.h \
+ src/locales.h src/utils.h
+/test.o: src/test.c src/myerr.h src/types.h src/griewank.h src/globals.h \
+ src/bitvec.h src/locales.h src/utils.h src/chromosome.h src/evaluation.h \
+ src/population.h src/individual.h
+/kwadratx.o: src/kwadratx.c src/kwadratx.h src/globals.h src/types.h \
+ src/myerr.h
+/bitvec.o: src/bitvec.c src/bitvec.h src/types.h src/locales.h \
+ src/globals.h src/utils.h src/myerr.h
+/population.o: src/population.c src/population.h src/types.h \
+ src/individual.h src/evaluation.h src/globals.h src/myerr.h \
+ src/chromosome.h src/bitvec.h src/locales.h src/utils.h
+/galgorithm.o: src/galgorithm.c src/galgorithm.h src/types.h \
+ src/population.h src/individual.h src/evaluation.h src/globals.h \
+ src/myerr.h src/chromosome.h src/bitvec.h src/locales.h src/utils.h
+/genalg.o: src/genalg.c src/types.h src/globals.h src/myerr.h \
+ src/galgorithm.h src/population.h src/individual.h src/evaluation.h \
+ src/chromosome.h src/bitvec.h src/locales.h src/utils.h src/griewank.h \
+ src/kwadratx.h
+/chromosome.o: src/chromosome.c src/chromosome.h src/types.h src/globals.h \
+ src/bitvec.h src/locales.h src/utils.h src/myerr.h src/evaluation.h

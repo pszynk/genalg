@@ -1,0 +1,1 @@
+/home/pawel/Programming/C/MyLibraries/Logging/mylog.h
