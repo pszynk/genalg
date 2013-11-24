@@ -27,7 +27,7 @@ real_t galgorithm(stats_t *stats)
         /* selection */
         /*nsel = pop_select(oldPop, selection);*/
         /*nsel = pop_select_rulette(oldPop, selection, oldPop->popSize);*/
-        nsel = pop_select_best(oldPop, selection, oldPop->popSize, oldPop->popSize/2);
+        nsel = pop_select_tournament(oldPop, selection, oldPop->popSize, 2);
         //idx_t j;
         //printf("SELEKCJA_>  ");
         //for (j = 0; j < nsel; ++j) {
@@ -35,13 +35,17 @@ real_t galgorithm(stats_t *stats)
         //}
         //printf("\n");
         /* generate new pop */
+        printf("generation\n");
         pop_generate(newPop, oldPop, selection, nsel);
         newPop->genIdx=gen;
         /* crossover */
+        printf("cross\n");
         pop_cross(newPop);
         /* mutation */
+        printf("mut\n");
         pop_mut(newPop);
         /* evaluate */
+        printf("eval\n");
         pop_eval(bestOfPop, newPop);
         /*
          *char* ops = pop_to_string(oldPop);

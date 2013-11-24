@@ -160,17 +160,57 @@ idx_t pop_select_best(
 
     return size;
 }
+//TODO
 
-idx_t pop_select_turnament(
+void sortTab(const popul_t *pop, idx_t *tab, idx_t size) {
+    idx_t i, j;
+    for (i = 0; i < size; ++i) {
+        for (j = 0; j < i; ++j) {
+            if (pop->indivs[tab[i]].fitness > pop->indivs[tab[j]].fitness) {
+                idx_t tmp = tab[i];
+                tab[i] = tab[j];
+                tab[j] = tmp;
+            }
+        }
+    }
+}
+
+idx_t pop_select_tournament(
         const popul_t *pop,
         idx_t *selection,
         idx_t size,
         idx_t toursize)
 {
-
-    return size;
+    idx_t i;
+    idx_t q = 0;
+    idx_t s = 0;
+    idx_t tabTmp[toursize];
+    idx_t tab[pop->popSize];
+    
+    for (i = 0; i < pop->popSize; ++i) {
+        tab[i] = i;
+    }
+    shuffle_array(tab, pop->popSize);
+    for (i = 0; i < pop->popSize; ++i) {
+        if (q == toursize) {
+            sortTab(pop, tabTmp, toursize);
+            selection[s++] = tabTmp[0];
+            q = 0;
+        }
+        tabTmp[q++] = tab[i];
+    }
+    
+    if (pop->popSize % toursize == 0) {
+        sortTab(pop, tabTmp, toursize);
+        selection[s++] = tabTmp[0];
+    }
+    /*
+    for (i = 0; i < s; ++i) {
+        printf("selection[%d] = %d\n", i, selection[i]);
+    }*/
+    
+    return s; // return number of selected items!
 }
-//TODO
 
 void pop_generate(
         popul_t *newPop,
@@ -180,10 +220,11 @@ void pop_generate(
 {
     idx_t i;
     for (i = 0; i < nsel; ++i) {
+        printf("i %d sel[i] %d\n", i, selection[i]);
         indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[selection[i]]));
         /*indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[i]));*/
     }
-    newPop->popSize = nsel;
+    newPop->popSize = oldPop->popSize; // population size doesn't change in new population
 }
 
 void pop_cross(

@@ -75,12 +75,13 @@ idx_t pop_select_best(
         idx_t size,
         idx_t kbest);
 
-idx_t pop_select_turnament(
+idx_t pop_select_tournament(
         const popul_t *pop,
         idx_t *selection,
         idx_t size,
         idx_t toursize);
 
+void sortTab(const popul_t *pop, idx_t *tab, idx_t size);
 
 char *pop_to_string(
         popul_t *pop);
