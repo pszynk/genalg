@@ -72,14 +72,12 @@ idx_t pop_select_rulette(
 idx_t pop_select_best(
         const popul_t *pop,
         idx_t *selection,
-        idx_t size,
-        idx_t kbest);
+        idx_t size);
 
 idx_t pop_select_tournament(
         const popul_t *pop,
         idx_t *selection,
-        idx_t size,
-        idx_t toursize);
+        idx_t size);
 
 void sortTab(const popul_t *pop, idx_t *tab, idx_t size);
 

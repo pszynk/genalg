@@ -28,7 +28,8 @@ real_t galgorithm(stats_t *stats)
         /*nsel = pop_select(oldPop, selection);*/
         /*nsel = pop_select_rulette(oldPop, selection, oldPop->popSize);*/
         /*nsel = pop_select_best(oldPop, selection, oldPop->popSize, oldPop->popSize/2);*/
-        nsel = pop_select_tournament(oldPop, selection, oldPop->popSize, 2);
+        /*nsel = pop_select_tournament(oldPop, selection, oldPop->popSize);*/
+        nsel = g_selFunct(oldPop, selection, oldPop->popSize);
         //idx_t j;
         //printf("SELEKCJA_>  ");
         //for (j = 0; j < nsel; ++j) {
