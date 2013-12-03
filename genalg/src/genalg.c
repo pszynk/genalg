@@ -24,6 +24,7 @@
 
 #define _PROGARGN  11
 
+char _set_VERBOSELVL    = 0;
 char _set_dim           = 0;
 char _set_maxGen        = 0;
 char _set_popSize       = 0;
@@ -203,17 +204,22 @@ void set_func_param(const char *optarg)
 void init_globals()
 {
     // defaults
-    idx_t def_dim                 = 2;
-    idx_t def_maxGen              = 50;
-    idx_t def_popSize             = 20;
-    idx_t def_selParamINT         = 2;
+    int    def_VERBOSELVL         = 0;
+    idx_t  def_dim                = 2;
+    idx_t  def_maxGen             = 50;
+    idx_t  def_popSize            = 20;
+    idx_t  def_selParamINT        = 2;
     real_t def_pCross             = 0.2;
     real_t def_pMut               = 0.01;
     real_t def_selParamFLOAT      = 0.5;
-    enum Functions def_funcType   = GRIEWANK;
-    enum Selections def_selType   = BEST;
+    enum   Functions def_funcType = GRIEWANK;
+    enum   Selections def_selType = BEST;
 
     // setting defaults
+    if (!_set_VERBOSELVL) {
+        g_VERBOSELVL = def_VERBOSELVL;
+    }
+
     if (!_set_dim) {
         g_dim = def_dim;
     }
@@ -328,7 +334,7 @@ void read_params(int argc, char *argv[])
     char selCode;
     /*char *funcOpt;*/
 
-    while ((c = getopt(argc, argv, "hd:f:g:k:m:p:r:s:x:")) != -1) {
+    while ((c = getopt(argc, argv, "hd:f:g:k:m:p:r:s:x:v")) != -1) {
         switch (c) {
             case 'h':
                 print_help_msg();
@@ -336,6 +342,7 @@ void read_params(int argc, char *argv[])
                 break;
             case 'v':
                 g_VERBOSELVL = 1;
+                _set_VERBOSELVL = 1;
                 break;
             case 'd':
                 set_idx_param(optarg, &g_dim,
@@ -452,7 +459,9 @@ int main(int argc, char *argv[])
     read_params(argc, argv);
     /* wartości domyślen zmiennych */
     init_globals();
-    print_params();
+    if (g_VERBOSELVL > 0) {
+        print_params();
+    }
     /* alokacja pamieci */
     /* funkcja algorytmu */
     exit(0);
