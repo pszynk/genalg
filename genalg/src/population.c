@@ -159,9 +159,9 @@ idx_t pop_select_tournament(
     idx_t i;
     idx_t q = 0;
     idx_t s = 0;
+    idx_t toursize = g_selParam;
     idx_t tabTmp[toursize];
     idx_t tab[pop->popSize];
-    idx_t toursize = g_selParam;
 
     for (i = 0; i < pop->popSize; ++i) {
         tab[i] = i;

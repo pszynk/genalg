@@ -13,7 +13,7 @@
 
 #define MAX_POPULATION 100000
 
-typedef struct popul_t {
+typedef struct _popul_t {
     idx_t    popSize;
     idx_t    genIdx;
     real_t   fitSum;
