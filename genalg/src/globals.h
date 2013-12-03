@@ -15,7 +15,7 @@ enum Selections {
     TOURNAMENT,
 };
 
-int g_VERBOSELVL = 0;
+int g_VERBOSELVL;
 
 //globalne parametry
 idx_t g_dim,

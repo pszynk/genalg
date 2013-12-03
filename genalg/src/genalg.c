@@ -24,17 +24,17 @@
 
 #define _PROGARGN  11
 
-char _set_dim      = 0;
-char _set_maxGen   = 0;
-char _set_popSize  = 0;
-char _set_selParamINT     = 0;
-char _set_pCross   = 0;
-char _set_pMut     = 0;
-char _set_selParamFLOAT     = 0;
-char _set_funcType = 0;
-char _set_selType = 0;
+char _set_dim           = 0;
+char _set_maxGen        = 0;
+char _set_popSize       = 0;
+char _set_selParamINT   = 0;
+char _set_pCross        = 0;
+char _set_pMut          = 0;
+char _set_selParamFLOAT = 0;
+char _set_funcType      = 0;
+char _set_selType       = 0;
 
-idx_t _val_selParamINT = 0;
+idx_t _val_selParamINT    = 0;
 real_t _val_selParamFLOAT = 0.0;
 
 static char _paramErrorMsg[] = "Blad parametrow wejsciowych";
@@ -78,25 +78,27 @@ void print_help_msg()
 
 void print_params()
 {
-    printf("  *******************************************\n");
-    printf("  ******************* PARAMS ****************\n");
-    printf("  *******************************************\n");
+    int padding = 32;
+    printf("  *************************************************************\n");
+    printf("  ******************* PARAMS **********************************\n");
+    printf("  *************************************************************\n");
     printf("\n");
     printf(
-        "   %27s -> %d\n"
-        "   %27s -> %d\n"
-        "   %27s -> %d\n"
-        "   %27s -> %f\n"
-        "   %27s -> %f\n",
-        "Wymiar", g_dim,
-        "Maksymalna liczba generacji", g_maxGen,
-        "Rozmiar populacji", g_popSize,
-        "Prawd. krzyzowania", g_pCross,
-        "Prawd. mutacji", g_pMut
+        "  %*s -> %d\n"
+        "  %*s -> %d\n"
+        "  %*s -> %d\n"
+        "  %*s -> %f\n"
+        "  %*s -> %f\n",
+        padding, "Wymiar", g_dim,
+        padding, "Maksymalna liczba generacji", g_maxGen,
+        padding, "Rozmiar populacji", g_popSize,
+        padding, "Prawd. krzyzowania", g_pCross,
+        padding, "Prawd. mutacji", g_pMut
         );
     switch (g_selType) {
         case BEST:
-            printf("   %35s -> %s %d %s\n",
+            printf("  %*s -> %s %d %s\n",
+                    padding,
                     "Metoda selekcji nowej populacji",
                     "m. wyboru",
                     g_selParam,
@@ -104,11 +106,13 @@ void print_params()
                     );
             break;
         case RULETTE:
-            printf("   %35s -> %s\n",
+            printf("  %*s -> %s\n",
+                    padding,
                     "Metoda selekcji nowej populacji","m. ruletki");
             break;
         case TOURNAMENT:
-            printf("   %35s -> %s %d %s\n",
+            printf("  %*s -> %s %d %s\n",
+                    padding,
                     "Metoda selekcji nowej populacji",
                     "m. turnieju z",
                     g_selParam,
@@ -120,15 +124,18 @@ void print_params()
     }
     switch (g_funcType) {
         case GRIEWANK:
-            printf("   %27s -> %s\n",
+            printf("  %*s -> %s\n",
+                    padding,
                     "Funkcja do minimalziacji","f. Griewanka");
             break;
         case ACKLEY:
-            printf("   %27s -> %s\n",
+            printf("  %*s -> %s\n",
+                    padding,
                     "Funkcja do minimalziacji","f. Ackleya");
             break;
         case KWADRATX:
-            printf("   %27s -> %s\n",
+            printf("  %*s -> %s\n",
+                    padding,
                     "Funkcja do minimalziacji","f. kwadratowa");
             break;
         default:
@@ -196,16 +203,15 @@ void set_func_param(const char *optarg)
 void init_globals()
 {
     // defaults
-    idx_t def_dim = 2;
-    idx_t def_maxGen = 50;
-    idx_t def_popSize = 20;
-    idx_t def_selParamINT = 2;
-    real_t def_pCross = 0.2;
-    real_t def_pMut = 0.01;
-    real_t def_selParamFLOAT = 0.5;
-    //enum Functions def_funcType = GRIEWANK;
-    enum Functions def_funcType = GRIEWANK;
-    enum Selections def_selType = BEST;
+    idx_t def_dim                 = 2;
+    idx_t def_maxGen              = 50;
+    idx_t def_popSize             = 20;
+    idx_t def_selParamINT         = 2;
+    real_t def_pCross             = 0.2;
+    real_t def_pMut               = 0.01;
+    real_t def_selParamFLOAT      = 0.5;
+    enum Functions def_funcType   = GRIEWANK;
+    enum Selections def_selType   = BEST;
 
     // setting defaults
     if (!_set_dim) {
@@ -242,6 +248,7 @@ void init_globals()
     if (!_set_selParamFLOAT) {
         _val_selParamFLOAT = def_selParamFLOAT;
     }
+
     if (!_set_selType) {
         g_selType = def_selType;
     }
@@ -269,19 +276,31 @@ void init_globals()
             MYERR_ERR(-1,
                     "Nieznana metoda selecji");
     }
+    if ((g_selParam < 1) && (g_selType == BEST)) {
+        MYERR_ERR(-1,
+            "Licza osobnikow rozpatrywanyw w "
+            "m. selekci k-najlepszych [= %d], musi być >= 1",
+            g_selParam);
+    }
+    if ((g_selParam < 2) && (g_selType == TOURNAMENT)) {
+        MYERR_ERR(-1,
+            "Licza osobnikow rozpatrywanyw w "
+            "m. selekci turjenowe [= %d], musi być >= 2",
+            g_selParam);
+    }
 
     //pozostałe globalne - zależne
     g_gen = 0;
 
     g_bitvecPerChrom = g_dim;
-    g_bitPerChrom = g_bitvecPerChrom * BIT_PER_BITVEC;
+    g_bitPerChrom    = g_bitvecPerChrom * BIT_PER_BITVEC;
 
     switch (g_funcType) {
         case GRIEWANK:
-            g_funcLB = GRIEW_LB;
-            g_funcUB = GRIEW_UB;
-            g_evalFunct = griew_eval;
-            g_revalFunct = griew_reval;
+            g_funcLB        = GRIEW_LB;
+            g_funcUB        = GRIEW_UB;
+            g_evalFunct     = griew_eval;
+            g_revalFunct    = griew_reval;
             g_minimizeFunct = griewank;
             break;
         //case ACKLEY:
@@ -291,10 +310,10 @@ void init_globals()
             //g_minimizeFunct = ;
             //break;
         case KWADRATX:
-            g_funcLB = KWX_LB;
-            g_funcUB = KWX_UB;
-            g_evalFunct =  kwx_eval;
-            g_revalFunct = kwx_reval;
+            g_funcLB        = KWX_LB;
+            g_funcUB        = KWX_UB;
+            g_evalFunct     = kwx_eval;
+            g_revalFunct    = kwx_reval;
             g_minimizeFunct = kwadratx;
             break;
         default:
@@ -340,17 +359,18 @@ void read_params(int argc, char *argv[])
                 break;
             case 'x':
                 set_prob_param(optarg, &g_pCross,
-                        "wielkosc populacji musi byc liczba naturalna wieksza od 0");
+                        "prawd. krzyżowania musi mieć wartość z przedziału [0, 1]");
                 _set_pCross = 1;
                 break;
             case 'm':
                 set_prob_param(optarg, &g_pMut,
-                        "wielkosc populacji musi byc liczba naturalna wieksza od 0");
+                        "prawd. mutacji musi mieć wartość z przedziału [0, 1]");
                 _set_pMut = 1;
                 break;
             case 'r':
                 set_prob_param(optarg, &_val_selParamFLOAT,
-                        "wielkosc populacji musi byc liczba naturalna wieksza od 0");
+                        "wartość zmiennoprzecinkowego parametru metody selekcji "
+                        "musi przyjmować wartość z przedziału (0, 1)");
                 _set_selParamFLOAT = 1;
                 break;
             case 'f':

@@ -93,7 +93,8 @@ static inline void myerr_set_color(const char *color)
     if (isatty(__MYERR_STD)) {
         fprintf(stderr, color);
     }
-}
+};
+
 static inline void myerr_msg(int iferrno, const char *fmt, ...){
     va_list ar;
     va_start(ar, fmt);
@@ -105,7 +106,7 @@ static inline void myerr_msg(int iferrno, const char *fmt, ...){
             fprintf(stderr, "\tERRNO [%d]: %s\n", errno, strerror(errno));
         }
     }
-}
+};
 
 
 #endif /* end of include guard: MYERR_H */
