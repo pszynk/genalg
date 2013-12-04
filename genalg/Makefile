@@ -30,7 +30,7 @@ SOURCES 	:= $(wildcard $(SRCFOLDER)/*.c)
 OBJS		:= $(addprefix $(OBJFOLDER)/,$(notdir $(SOURCES:.c=.o)))
 
 
-# A list of all needed special libraries 
+# A list of all needed special libraries
 LIBS 		:= m
 LIBS 		:= $(addprefix -l,$(LIBS))
 
@@ -59,7 +59,7 @@ $(OBJFOLDER)/%.o : $(SRCFOLDER)/%.c
 clean:
 	rm -fv $(OBJFOLDER)/*.o
 	rm -fv Makefile.deps
-	
+
 cleanest: clean
 	rm -fv $(BINFOLDER)/release
 	rm -fv $(BINFOLDER)/debug
@@ -78,12 +78,18 @@ release: CXXFLAGS += -O2
 release: deps $(OBJS)
 	$(CXX) $(CXXFLAGS) $(MACROS) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINFOLDER)/$@
 
-# Debugging target, append max possible level (3rd) of adding 
+# Debugging target, append max possible level (3rd) of adding
 # debugging symbols to the output program
 debug: CXXFLAGS += -g3
 debug: MACROS	+= -DGENALG_DEBUG=1
 debug: deps $(OBJS)
 	$(CXX) $(CXXFLAGS) $(MACROS) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINFOLDER)/$@
+
+ompdebug: CXXFLAGS += -fopenmp
+ompdebug: debug
+
+omprelease: CXXFLAGS += -fopenmp
+omprelease: release
 
 echo:
 	@echo CXX: $(CXX)
