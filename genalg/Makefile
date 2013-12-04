@@ -1,4 +1,6 @@
 # Redefine the global variables
+EXENAME	= genalg
+
 # Compiler
 CXX 		= gcc
 
@@ -70,26 +72,36 @@ deps:
 	sed 's/\(^.*\.o:\)/$(echo $(OBJFOLDER) | sed -e 's/[]\/()$*.^|[]/\\&/g')\/\1/' < Makefile.deps > temp.deps
 	mv temp.deps Makefile.deps
 
-# Effectively, the default build target ('all' redirects here)
-# Append compiler code optimalization
-release: CXXFLAGS += -O2
 
 # Building depends on generated dependencies and all .o (object) files
-release: deps $(OBJS)
-	$(CXX) $(CXXFLAGS) $(MACROS) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINFOLDER)/$@
+build: deps $(OBJS)
+	$(CXX) $(CXXFLAGS) $(MACROS) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINFOLDER)/$(EXENAME)
+
+# Effectively, the default build target ('all' redirects here)
+# Append compiler code optimalization
+release: CXXFLAGS 	+= -O2
+release: EXENAME 	:= release
+release: build
 
 # Debugging target, append max possible level (3rd) of adding
 # debugging symbols to the output program
 debug: CXXFLAGS += -g3
 debug: MACROS	+= -DGENALG_DEBUG=1
-debug: deps $(OBJS)
-	$(CXX) $(CXXFLAGS) $(MACROS) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINFOLDER)/$@
+debug: EXENAME 	:= debug
+debug: build
 
-ompdebug: CXXFLAGS += -fopenmp
-ompdebug: debug
 
-omprelease: CXXFLAGS += -fopenmp
-omprelease: release
+ompdebug: CXXFLAGS 	+= -g3
+ompdebug: CXXFLAGS	+= -fopenmp
+ompdebug: MACROS	+= -DGENALG_DEBUG=1
+ompdebug: EXENAME 	:= ompdebug
+ompdebug: useopenmp build
+
+omprelease: CXXFLAGS 	+= -O2
+omprelease: CXXFLAGS	+= -fopenmp
+omprelease: EXENAME 	:= omprelease
+omprelease: useopenmp build
+
 
 echo:
 	@echo CXX: $(CXX)
@@ -102,7 +114,7 @@ echo:
 	@echo LIBS: $(LIBS)
 
 # Force all targets
-.PHONY: all clean deps release debug echo cleanest
+.PHONY: all clean deps release debug omprelease ompdebug echo cleanest
 
 # Include (ie. insert here literally) all the generated dependencies
 # '-' prevents make from showing errors if the file doesn't exist (or is not readable)
