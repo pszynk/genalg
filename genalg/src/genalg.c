@@ -22,9 +22,11 @@
 #include "griewank.h"
 #include "kwadratx.h"
 
-#define _PROGARGN  11
+// ilość argumentów w programie
+#define _PROGARGN  12
 
 char _set_VERBOSELVL    = 0;
+char _set_seed          = 0;
 char _set_dim           = 0;
 char _set_maxGen        = 0;
 char _set_popSize       = 0;
@@ -47,6 +49,7 @@ char *_progargs[_PROGARGN][3] =
         {"-h       ", "Wyświetla tą wiadomość            ", "    "},
         {"-v       ", "verbose - dodatkowe komunikaty    ", "    "},
         {"-d[N]    ", "Wymiar funkcji                    ", "   2"},
+        {"-e[N]    ", "Seed dla randomizacji             ", "   0"},
         {"-g[N]    ", "Maksymalna ilość generacji        ", "  50"},
         {"-k[N]    ", "Parametr metody selekcji [INT]    ", "   2"},
         {"-r[N]    ", "Parametr metody selekcji [FLOAT]  ", " 0.5"},
@@ -88,8 +91,10 @@ void print_params()
         "  %*s -> %d\n"
         "  %*s -> %d\n"
         "  %*s -> %d\n"
+        "  %*s -> %d\n"
         "  %*s -> %f\n"
         "  %*s -> %f\n",
+        padding, "Seed", g_seed,
         padding, "Wymiar", g_dim,
         padding, "Maksymalna liczba generacji", g_maxGen,
         padding, "Rozmiar populacji", g_popSize,
@@ -204,7 +209,9 @@ void set_func_param(const char *optarg)
 void init_globals()
 {
     // defaults
-    int    def_VERBOSELVL         = 0;
+    int      def_VERBOSELVL       = 0;
+    unsigned def_seed             = time(NULL);
+
     idx_t  def_dim                = 2;
     idx_t  def_maxGen             = 50;
     idx_t  def_popSize            = 20;
@@ -218,6 +225,10 @@ void init_globals()
     // setting defaults
     if (!_set_VERBOSELVL) {
         g_VERBOSELVL = def_VERBOSELVL;
+    }
+
+    if (!_set_seed) {
+        g_seed = def_seed;
     }
 
     if (!_set_dim) {
@@ -342,7 +353,7 @@ void read_params(int argc, char *argv[])
     char selCode;
     /*char *funcOpt;*/
 
-    while ((c = getopt(argc, argv, "hd:f:g:k:m:p:r:s:x:v")) != -1) {
+    while ((c = getopt(argc, argv, "hd:e:f:g:k:m:p:r:s:x:v")) != -1) {
         switch (c) {
             case 'h':
                 print_help_msg();
@@ -356,6 +367,11 @@ void read_params(int argc, char *argv[])
                 set_idx_param(optarg, &g_dim,
                         "wymiar minimalizowanej funkcji musi byc liczba naturalna wieksza od 0");
                 _set_dim = 1;
+                break;
+            case 'e':
+                set_idx_param(optarg, &g_seed,
+                        "seed do randomizacji musi byc liczba naturalna wieksza od 0");
+                _set_seed = 1;
                 break;
             case 'g':
                 set_idx_param(optarg, &g_maxGen,
@@ -462,11 +478,11 @@ int main(int argc, char *argv[])
     real_t result;
     stats_t stats;
 
-    srand(time(NULL));
     /* wczytanie parametrow */
     read_params(argc, argv);
     /* wartości domyślen zmiennych */
     init_globals();
+    srand(g_seed);
     if (g_VERBOSELVL > 0) {
         print_params();
     }

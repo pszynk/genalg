@@ -17,6 +17,8 @@ enum Selections {
 
 int g_VERBOSELVL;
 
+unsigned int g_seed;
+
 //globalne parametry
 idx_t g_dim,
       g_maxGen,
