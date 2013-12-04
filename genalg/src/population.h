@@ -82,7 +82,7 @@ idx_t pop_select_tournament(
 void sortTab(const popul_t *pop, idx_t *tab, idx_t size);
 
 char *pop_to_string(
-        popul_t *pop);
+        const popul_t *pop);
 
 /* STATS */
 

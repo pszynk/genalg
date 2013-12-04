@@ -10,13 +10,6 @@
 
 #define MAX_GENERATIONS (100 * 1000)
 
-//typedef struct gaparams_t {
-    //idx_t MAX_POP_SIZE;
-    //idx_t MAX_GENERS;
-    //real_t PMUT;
-    //real_t PCROSS;
-//} gaparams_t;
-
 typedef struct stats_t {
 
 } stats_t;

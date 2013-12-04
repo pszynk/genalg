@@ -256,22 +256,13 @@ void pop_cross(
     idx_t icross[pop->popSize];
     for (i = 0; i < pop->popSize; ++i) {
         if (RANDOM_0_TO_1 <= g_pCross) {
-            //printf("cross> %d będzie corssowany\n", i);
             icross[ncross++] = i;
         }
     }
-    //printf("cross> %d corssujemy\n", ncross);
-    /*  shuffle TODO do utils */
     shuffle_array(icross, ncross);
-    //for(i=0; i < ncross; ++i) {
-        //printf("%d, ", icross[i]);
-    //}
-    //printf("\n");
 
     ncross &= (idx_t) (~1);
     for (i = 0; i < ncross; i+=2) {
-        //printf("corss> %d <==X==> %d\n", icross[i], icross[i+1]);
-        //printf("corss> %f <==X==> %f\n", pop->indivs[icross[i]].fitness, pop->indivs[icross[i+1]].fitness);
         indiv_xcross(&(pop->indivs[icross[i]]), &(pop->indivs[icross[i+1]]));
     }
 }
@@ -286,7 +277,7 @@ void pop_mut(
 }
 
 char* pop_to_string(
-        popul_t *pop)
+        const popul_t *pop)
 {
     char *chromStr = indiv_to_string(pop->indivs);
     char *str = malloc(sizeof(char) * (strlen(chromStr) * (pop->popSize + 10) +  pop->popSize * 5 + 200));
@@ -413,7 +404,6 @@ char *popStat_to_string(
     char tmpstr[500];
     idx_t i, slen = 0;
 
-    /*memset(str, '\0', strl);*/
     str[0] = '\0';
     if ((slen =
           sprintf(

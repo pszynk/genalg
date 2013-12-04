@@ -439,40 +439,7 @@ void read_params(int argc, char *argv[])
     }
 
 }
-//#include "individual.h"
-int main_(int argc, char *argv[])
-{
 
-    real_t args[100];// = {40.0, 40.0};
-    idx_t iii;
-    for (iii = 0; iii < 100; ++iii) {
-        args[iii] = 40.0;
-    }
-    printf("%f\n", griewank(args, 100));
-    return 0;
-    srand(time(NULL));
-    read_params(argc, argv);
-    /* wartości domyślen zmiennych */
-    init_globals();
-    print_params();
-    indiv_t *indiv = indiv_create(1);
-    indiv_rand(indiv);
-    real_t val = indiv_eval(indiv);
-    char *str = indiv_to_string(indiv);
-    printf("%s\n", str);
-    free(str);
-    printf("%f\n", val);
-    //idx_t i, count = 100000;
-    //for (i = 0; i < count; ++i) {
-        //idx_t rr = RANDOM_FROM(1, 10);
-        //printf("%d <- %d\n", rr, i);
-        //if(rr == 10) {
-            //printf("JEST 10");
-            //break;
-        //}
-    //}
-    return 0;
-}
 int main(int argc, char *argv[])
 {
     real_t result;
@@ -490,7 +457,7 @@ int main(int argc, char *argv[])
     /* funkcja algorytmu */
     result = galgorithm(&stats);
     /* zwrocenie wynikow */
-    printf("\n-RESULT -> %f\n", g_revalFunct(result));
-    printf("\nRESULT -> %f\n", result);
+    printf("RESULT->%f\n", g_revalFunct(result));
+    /*printf("\nRESULT -> %f\n", result);*/
     return 0;
 }
