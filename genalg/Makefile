@@ -81,7 +81,7 @@ release: deps $(OBJS)
 # Debugging target, append max possible level (3rd) of adding 
 # debugging symbols to the output program
 debug: CXXFLAGS += -g3
-debug: MACROS	+= -DSZSNN_DEBUG=1
+debug: MACROS	+= -DGENALG_DEBUG=1
 debug: deps $(OBJS)
 	$(CXX) $(CXXFLAGS) $(MACROS) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BINFOLDER)/$@
 
