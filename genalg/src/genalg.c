@@ -294,6 +294,14 @@ void init_globals()
             "m. selekci turjenowe [= %d], musi być >= 2",
             g_selParam);
     }
+    if (g_selParam > g_popSize) {
+        if (g_VERBOSELVL) {
+            MYERR_WARN("Uwaga parametr metody selekcji[%d] musi być mniejszy od\n"
+                    " rozmaru populacji[%d]: Modyfikacja parametru do wartości %d",
+                    g_selParam, g_popSize, g_popSize);
+        }
+        g_selParam = g_popSize;
+    }
 
     //pozostałe globalne - zależne
     g_gen = 0;
@@ -464,7 +472,6 @@ int main(int argc, char *argv[])
     }
     /* alokacja pamieci */
     /* funkcja algorytmu */
-    exit(0);
     result = galgorithm(&stats);
     /* zwrocenie wynikow */
     printf("\n-RESULT -> %f\n", g_revalFunct(result));

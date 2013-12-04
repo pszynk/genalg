@@ -49,10 +49,10 @@
 #define __MYERR_ERROR_PREFIX "ERROR: "
 #define __MYERR_WARNING_PREFIX "WARNING: "
 
-#define __MYERR_COL_RED  "red"
-#define __MYERR_COL_GREEN  "green"
-#define __MYERR_COL_BLUE "blue"
-#define __MYERR_COL_DEFAULT  "default"
+#define __MYERR_COL_RED  "\x1b[31m"
+#define __MYERR_COL_GREEN  "\x1b[32m"
+#define __MYERR_COL_BLUE "\x1b[34m"
+#define __MYERR_COL_DEFAULT  "\x1b[0m"
 
 
 #if MYERR_COLOR_ON > 0
@@ -78,7 +78,7 @@
 
 #define __MYERR_MSG(prefix, color, iferrno, fmt, args...) \
     do{ \
-        __MYERR_SET_COLOR(__MYERR_COL_RED); \
+        __MYERR_SET_COLOR(color); \
         myerr_msg(iferrno, \
                 prefix \
                 "%s (%s, line %d)\n\t%s : " \
@@ -91,7 +91,7 @@
 static inline void myerr_set_color(const char *color)
 {
     if (isatty(__MYERR_STD)) {
-        fprintf(stderr, color);
+        fprintf(stderr, "%s", color);
     }
 };
 

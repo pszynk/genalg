@@ -137,7 +137,7 @@ idx_t pop_select_best(
     return size;
 }
 //TODO
-
+/*
 void sortTab(const popul_t *pop, idx_t *tab, idx_t size) {
     idx_t i, j;
     for (i = 0; i < size; ++i) {
@@ -150,8 +150,9 @@ void sortTab(const popul_t *pop, idx_t *tab, idx_t size) {
         }
     }
 }
+*/
 
-idx_t pop_select_tournament(
+/*idx_t pop_select_tournament(
         const popul_t *pop,
         idx_t *selection,
         idx_t size)
@@ -180,12 +181,58 @@ idx_t pop_select_tournament(
         sortTab(pop, tabTmp, toursize);
         selection[s++] = tabTmp[0];
     }
-    /*
+    [>
     for (i = 0; i < s; ++i) {
         printf("selection[%d] = %d\n", i, selection[i]);
-    }*/
+    }<]
 
     return s; // return number of selected items!
+}*/
+
+idx_t pop_select_tournament(
+        const popul_t *pop,
+        idx_t *selection,
+        idx_t size)
+{
+    idx_t i, s, t;
+    idx_t last, rnd, rndidx,
+          bestIdx  = 0,
+          toursize = g_selParam;
+    idx_t idxs[pop->popSize];
+
+    real_t currFit,
+           bestFit = -1;
+
+    if (toursize < 1) {
+        MYERR_ERR(-2, "Rozmar turnieju jest mniejszy od 1!");
+    }
+
+    //init idxs table
+    for (i = 0; i < pop->popSize; ++i) {
+        idxs[i] = i;
+    }
+    // przeprowadź size turnieji
+    for (s = 0; s < size; ++s) {
+        // ile zostało możliwych indeksów do wyboru
+        last = pop->popSize;
+        // sprawdzaj kolejnych uczesników
+        for (t = 0; t < toursize; ++t) {
+            rnd = RANDOM_FROM(0, last);
+            rndidx = idxs[rnd];
+            currFit = pop->indivs[idxs[rndidx]].fitness;
+            // obecny zwycięzca
+            if (currFit > bestFit) {
+                bestFit = currFit;
+                bestIdx = rndidx;
+            }
+            // wybrany indeks przerzuć na koniec
+            idxs[rnd] = idxs[last-1];
+            idxs[last-1] = rndidx;
+            --last;
+        }
+        selection[s] = bestIdx;
+    }
+    return size;
 }
 
 void pop_generate(
@@ -196,9 +243,8 @@ void pop_generate(
 {
     idx_t i;
     for (i = 0; i < nsel; ++i) {
-        printf("i %d sel[i] %d\n", i, selection[i]);
+        /*printf("i %d sel[i] %d\n", i, selection[i]);*/
         indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[selection[i]]));
-        /*indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[i]));*/
     }
     newPop->popSize = oldPop->popSize; // population size doesn't change in new population
 }
