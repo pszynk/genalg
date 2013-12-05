@@ -20,7 +20,6 @@
 #include "population.h"
 
 #include "griewank.h"
-#include "ackley.h"
 #include "kwadratx.h"
 
 // ilość argumentów w programie
