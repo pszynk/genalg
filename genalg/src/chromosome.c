@@ -36,6 +36,7 @@ void chrom_copy(chrom_t to, const chrom_t from)
 void chrom_rand(chrom_t chrom)
 {
     idx_t i;
+    // TODO OMP tylko inicjalizacja
     for (i = 0; i < g_bitvecPerChrom; ++i) {
         chrom[i] = binary_to_gray(RANDOM_BITVEC);
     }
@@ -62,6 +63,7 @@ idx_t chrom_xcross(
      * 1' := ccc/x/bbbbbb   2' := aaa/y/dddddd
      */
     idx_t i;
+    // TODO OMP chyba za mało razy
     for (i = nBVec + 1; i < g_bitvecPerChrom; ++i) {
         swap_bitvec(chrom1 + i, chrom2 + i);
     }
@@ -134,6 +136,7 @@ char* chrom_to_string(
     strcpy(str, bvStr);
     free(bvStr);
     int i;
+    // TODO OMP wypisywanie
     for(i = g_bitvecPerChrom - 2; i >= 0; --i) {
         strcat(str, "|");
         bvStr = bitvec_to_string(chrom + i);

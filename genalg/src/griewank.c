@@ -14,6 +14,7 @@ real_t griewank(const real_t *args, idx_t nargs)
 {
     real_t sum = 0, prod = 1, x;
     idx_t i;
+    // TODO OMP tylko dim razy, czy warto?
     for (i = 0; i < nargs; ++i) {
         x = args[i];
         if ((x > GRIEW_UB) || (x < GRIEW_LB)) {

@@ -18,8 +18,10 @@ void pop_destroy(
     idx_t i;
     // TODO OMP tylko finalziacja
     for (i = 0; i < pop->popSize; ++i) {
-        indiv_destory(&(pop->indivs[i]));
+        /*indiv_destory(&(pop->indivs[i]));*/
+        indiv_destory(pop->indivs + i);
     }
+    free(pop->indivs);
     free(pop);
     pop = NULL;
 }
@@ -167,6 +169,7 @@ idx_t pop_select_tournament(
         // ile zostało możliwych indeksów do wyboru
         last = pop->popSize;
         // sprawdzaj kolejnych uczesników
+        // TODO OMP NIE MOŻNA ZRÓWNOLEGLIC, zależy od poprzedniej iteracji
         for (t = 0; t < toursize; ++t) {
             rnd = RANDOM_FROM(0, last);
             rndidx = idxs[rnd];
@@ -193,6 +196,7 @@ void pop_generate(
         idx_t nsel)
 {
     idx_t i;
+    // TODO OMP niezłe miejsce na zrównoleglenie
     for (i = 0; i < nsel; ++i) {
         /*printf("i %d sel[i] %d\n", i, selection[i]);*/
         indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[selection[i]]));
@@ -205,6 +209,7 @@ void pop_cross(
 {
     idx_t i, ncross = 0;
     idx_t icross[pop->popSize];
+    // TODO OMP niezłe
     for (i = 0; i < pop->popSize; ++i) {
         if (RANDOM_0_TO_1 <= g_pCross) {
             icross[ncross++] = i;
@@ -213,6 +218,7 @@ void pop_cross(
     shuffle_array(icross, ncross);
 
     ncross &= (idx_t) (~1);
+    // TODO OMP nie wiem czy warto, ale może być  ich sporo
     for (i = 0; i < ncross; i+=2) {
         indiv_xcross(&(pop->indivs[icross[i]]), &(pop->indivs[icross[i+1]]));
     }
@@ -222,6 +228,7 @@ void pop_mut(
         popul_t *pop)
 {
     idx_t i;
+    // TODO OMP chyba warto
     for (i = 0; i < pop->popSize; ++i) {
         indiv_mut(&(pop->indivs[i]));
     }
@@ -248,6 +255,7 @@ char* pop_to_string(
     strcat(str, chromStr);
     free(chromStr);
     idx_t i;
+    // TODO OMP tylko wypisywanie
     for (i = 1; i < pop->popSize; ++i) {
         strcat(str, "\n\t");
         chromStr = indiv_to_string(pop->indivs + i);
@@ -302,11 +310,13 @@ popStats_t *popStats_generate(
     memset(tmpRes, 0, g_dim * sizeof(real_t));
     memset(tmpEval, 0, g_dim * sizeof(real_t));
 
+    // TODO OMP nieważna funkcja
     for (i = 0; i < pop->popSize; ++i) {
         tmpFS += pop->indivs[i].fitness;
         tmpOF += reval_funct(pop->indivs[i].fitness);
 
         chrom_to_real(pop->indivs[i].genotype, tmpRealChrom);
+        // TODO OMP nieważne
         for (j = 0; j < g_dim; ++j) {
             tmpEval[j] += pop->indivs[i].genotype[j];
             tmpRes[j] += tmpRealChrom[j];
@@ -316,6 +326,7 @@ popStats_t *popStats_generate(
     popstat->fitMean = tmpFS / pop->popSize;
     popstat->objFuncMean = tmpOF / pop->popSize;
 
+    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         popstat->evalResultMean[i] = tmpEval[i] / pop->popSize;
         popstat->objResultsMean[i] = tmpRes[i] / pop->popSize;
@@ -326,11 +337,13 @@ popStats_t *popStats_generate(
     memset(tmpRes, 0, g_dim * sizeof(real_t));
     memset(tmpEval, 0, g_dim * sizeof(real_t));
 
+    // TODO OMP nieważne
     for (i = 0; i < pop->popSize; ++i) {
         tmpFS += pow(pop->indivs[i].fitness - popstat->fitMean, 2.0);
         tmpOF += pow(reval_funct(pop->indivs[i].fitness) - popstat->objFuncMean, 2.0);
 
         chrom_to_real(pop->indivs[i].genotype, tmpRealChrom);
+        // TODO OMP nieważne
         for (j = 0; j < g_dim; ++j) {
             tmpEval[j] += pow(pop->indivs[i].genotype[j] - popstat->evalResultMean[j], 2.0);
             tmpRes[j] += pow(tmpRealChrom[j] - popstat->objResultsMean[j], 2.0);
@@ -340,6 +353,7 @@ popStats_t *popStats_generate(
     popstat->fitSD = sqrt(tmpFS / pop->popSize);
     popstat->objFuncSD = sqrt(tmpOF / pop->popSize);
 
+    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         popstat->evalResultSD[i] = sqrt(tmpEval[i] / pop->popSize);
         popstat->objResultsSD[i] = sqrt(tmpRes[i] / pop->popSize);
@@ -393,6 +407,7 @@ char *popStat_to_string(
         MYERR_ERR(-3, "Blad w population stats -> string");
     }
     strcat(str, tmpstr);
+    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         if ((slen =
               sprintf(
@@ -418,6 +433,7 @@ char *popStat_to_string(
         MYERR_ERR(-3, "Blad w population stats -> string");
     }
     strcat(str, tmpstr);
+    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         if ((slen =
               sprintf(

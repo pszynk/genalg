@@ -7,6 +7,7 @@ indiv_t* indiv_create(
     }
     indiv_t *indiv = malloc(sizeof(*indiv) * nr);
     idx_t i;
+    // TODO OMP tylko inicjalizacja
     for (i = 0; i < nr; ++i) {
         indiv[i].fitness = 0;
         indiv[i].genotype = chrom_create();

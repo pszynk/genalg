@@ -69,6 +69,7 @@ void print_help_msg()
             "NAZWA    "  "%sOPIS                             "  "%sDOMYŚLNA\n"
             ,_progname, _progdec, _progname, _spaces, _spaces);
     int i;
+    // TODO OMP tylko wypisywanie
     for (i = 0; i < _PROGARGN; ++i) {
         printf("%s%s%s%s%s\n",
                 _progargs[i][0],

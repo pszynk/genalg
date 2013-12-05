@@ -95,12 +95,17 @@ real_t galgorithm(stats_t *stats)
         real_t xxx[g_dim];
         chrom_to_real(bestOfAll->genotype, xxx);
         idx_t i;
+        // TODO OMP tylko wypisywanie
         for (i = 0; i < g_dim; ++i) {
             printf("%f, ", xxx[i]);
         }
         printf("\n");
     }
 
+    indiv_destory(bestOfAll);
+    free(bestOfAll);
+    indiv_destory(bestOfPop);
+    free(bestOfPop);
     pop_destroy(oldPop);
     pop_destroy(newPop);
 
