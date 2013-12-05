@@ -16,6 +16,7 @@ void pop_destroy(
         popul_t *pop)
 {
     idx_t i;
+    // TODO OMP tylko finalziacja
     for (i = 0; i < pop->popSize; ++i) {
         indiv_destory(&(pop->indivs[i]));
     }
@@ -27,6 +28,7 @@ void pop_eval(indiv_t *bestOne, popul_t *pop)
 {
     real_t  fit, bestFit = 0, fitSum = 0;
     idx_t bestIdx = 0, i;
+    // TODO OMP wykonywane popSize razy -> dobre miejsce na omp
     for (i = 0; i < pop->popSize; ++i) {
         fit = indiv_eval(&(pop->indivs[i]));
         fitSum += fit;
@@ -42,6 +44,7 @@ void pop_eval(indiv_t *bestOne, popul_t *pop)
 void pop_rand(popul_t *pop)
 {
     idx_t i;
+    // TODO OMP tylko inicjalziacja
     for (i = 0; i < pop->popSize; ++i) {
         indiv_rand(&(pop->indivs[i]));
     }
@@ -56,10 +59,12 @@ idx_t pop_select_rulette(
     idx_t i, j;
     real_t psum = 0, rot;
     real_t sprob[pop->popSize];
+    // TODO OMP dobre
     for (i = 0; i < pop->popSize; ++i) {
         psum += (pop->indivs[i].fitness / pop->fitSum);
         sprob[i] = psum;
     }
+    // TODO OMP tez dobre
     for (i = 0; i < size; ++i) {
         rot = RANDOM_0_TO_1;
         j = 0;
@@ -85,13 +90,11 @@ idx_t pop_select_best(
     real_t split, fit;
     kbest = fmin(kbest, pop->popSize);
 
+    // TODO taka inicjalizacja tablcy pojawia się też w turniejach
+    // może oddzielna funkcja?
+    // TODO OMP za proste na wątki?
     for (i = 0; i < pop->popSize; ++i) {
         idxs[i] = i;
-        /*
-         *printf("%d -----> %f\n",
-         *        i,
-         *        split = pop->indivs[i].fitness);
-         */
     }
 
     while(from < to) {
@@ -127,67 +130,13 @@ idx_t pop_select_best(
         }
     }
 
-    /*printf("\n");*/
+    // TODO OMP za proste na wątki?
     for (i = 0; i < size; ++i) {
         selection[i] = idxs[i % kbest];
-        /*printf("%d, ", selection[i]);*/
     }
-    /*printf("\n");*/
 
     return size;
 }
-//TODO
-/*
-void sortTab(const popul_t *pop, idx_t *tab, idx_t size) {
-    idx_t i, j;
-    for (i = 0; i < size; ++i) {
-        for (j = 0; j < i; ++j) {
-            if (pop->indivs[tab[i]].fitness > pop->indivs[tab[j]].fitness) {
-                idx_t tmp = tab[i];
-                tab[i] = tab[j];
-                tab[j] = tmp;
-            }
-        }
-    }
-}
-*/
-
-/*idx_t pop_select_tournament(
-        const popul_t *pop,
-        idx_t *selection,
-        idx_t size)
-{
-    idx_t i;
-    idx_t q = 0;
-    idx_t s = 0;
-    idx_t toursize = g_selParam;
-    idx_t tabTmp[toursize];
-    idx_t tab[pop->popSize];
-
-    for (i = 0; i < pop->popSize; ++i) {
-        tab[i] = i;
-    }
-    shuffle_array(tab, pop->popSize);
-    for (i = 0; i < pop->popSize; ++i) {
-        if (q == toursize) {
-            sortTab(pop, tabTmp, toursize);
-            selection[s++] = tabTmp[0];
-            q = 0;
-        }
-        tabTmp[q++] = tab[i];
-    }
-
-    if (pop->popSize % toursize == 0) {
-        sortTab(pop, tabTmp, toursize);
-        selection[s++] = tabTmp[0];
-    }
-    [>
-    for (i = 0; i < s; ++i) {
-        printf("selection[%d] = %d\n", i, selection[i]);
-    }<]
-
-    return s; // return number of selected items!
-}*/
 
 idx_t pop_select_tournament(
         const popul_t *pop,
@@ -208,10 +157,12 @@ idx_t pop_select_tournament(
     }
 
     //init idxs table
+    // TODO też w best, oddzielna funckja?
     for (i = 0; i < pop->popSize; ++i) {
         idxs[i] = i;
     }
     // przeprowadź size turnieji
+    // TODO OMP dobre UWAGA na zmienne last (może deklaracja w pętli?)
     for (s = 0; s < size; ++s) {
         // ile zostało możliwych indeksów do wyboru
         last = pop->popSize;

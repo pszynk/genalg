@@ -87,6 +87,7 @@ void chrom_mut(
         chrom_t chrom)
 {
     idx_t i, nBVec, nBitInBVec;
+    // TODO OMP petla po bit per chrom (max 100 * 16 lub 32), wykonywana popSize * gen razy
     for (i = 0; i < g_bitPerChrom; ++i) {
         if (RANDOM_0_TO_1 <= g_pMut) {
             /*nBVec = i / g_bitPerChrom;*/
@@ -113,6 +114,7 @@ void chrom_to_real(
         real_t *value)
 {
     idx_t i;
+    // TODO OMP petla po dim, wykonywana popSize * gen razy
     for (i = 0; i < g_bitvecPerChrom; ++i) {
         value[i] = binary_to_real(
                 gray_to_binary(chrom[i]));

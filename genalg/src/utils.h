@@ -16,6 +16,7 @@ static inline void shuffle_array(idx_t *array, idx_t n)
     if (n > 1)
     {
         idx_t i;
+        // TODO OMP może być warto
         for (i = 0; i < n - 1; i++)
         {
           idx_t j = i + rand() / (RAND_MAX / (n - i) + 1);

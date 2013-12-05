@@ -46,6 +46,7 @@ real_t galgorithm(stats_t *stats)
     pop_eval(bestOfAll, oldPop);
 
     bestFval = indiv_eval(bestOfAll);
+    // TODO nie można zrównoleglić, zależy od poprzedniej iteracji
     for (gen = 1; gen <= g_maxGen; ++gen) {
         val = g_revalFunct(bestFval);
         /* jezeli jestesmy blisko minimum, przerwij algorytm */
