@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <stdlib.h>
+#include "locales.h"
 #include "types.h"
 
 #define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
@@ -17,6 +18,7 @@ static inline void shuffle_array(idx_t *array, idx_t n)
     {
         idx_t i;
         // TODO OMP może być warto
+#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
         for (i = 0; i < n - 1; i++)
         {
           idx_t j = i + rand() / (RAND_MAX / (n - i) + 1);

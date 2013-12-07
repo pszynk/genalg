@@ -28,15 +28,20 @@ void pop_destroy(
 
 void pop_eval(indiv_t *bestOne, popul_t *pop)
 {
-    real_t  fit, bestFit = 0, fitSum = 0;
+    real_t bestFit = 0, fitSum = 0;
     idx_t bestIdx = 0, i;
     // TODO OMP wykonywane popSize razy -> dobre miejsce na omp
+#pragma omp parallel for schedule(static) num_threads(GENALG_OMP_NUM_THREADS) reduction(+: fitSum)
     for (i = 0; i < pop->popSize; ++i) {
+        real_t fit;
         fit = indiv_eval(&(pop->indivs[i]));
         fitSum += fit;
+#pragma omp critical
+        {
         if (fit > bestFit) {
             bestFit = fit;
             bestIdx = i;
+        }
         }
     }
     pop->fitSum = fitSum;
@@ -197,6 +202,7 @@ void pop_generate(
 {
     idx_t i;
     // TODO OMP niezłe miejsce na zrównoleglenie
+#pragma omp parallel for schedule(static) num_threads(GENALG_OMP_NUM_THREADS)
     for (i = 0; i < nsel; ++i) {
         /*printf("i %d sel[i] %d\n", i, selection[i]);*/
         indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[selection[i]]));
@@ -210,15 +216,20 @@ void pop_cross(
     idx_t i, ncross = 0;
     idx_t icross[pop->popSize];
     // TODO OMP niezłe
+#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
     for (i = 0; i < pop->popSize; ++i) {
         if (RANDOM_0_TO_1 <= g_pCross) {
+#pragma omp critical
+            {
             icross[ncross++] = i;
+            }
         }
     }
     shuffle_array(icross, ncross);
 
     ncross &= (idx_t) (~1);
     // TODO OMP nie wiem czy warto, ale może być  ich sporo
+#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
     for (i = 0; i < ncross; i+=2) {
         indiv_xcross(&(pop->indivs[icross[i]]), &(pop->indivs[icross[i+1]]));
     }
@@ -229,6 +240,7 @@ void pop_mut(
 {
     idx_t i;
     // TODO OMP chyba warto
+#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
     for (i = 0; i < pop->popSize; ++i) {
         indiv_mut(&(pop->indivs[i]));
     }

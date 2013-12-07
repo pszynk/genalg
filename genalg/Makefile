@@ -95,12 +95,12 @@ ompdebug: CXXFLAGS 	+= -g3
 ompdebug: CXXFLAGS	+= -fopenmp
 ompdebug: MACROS	+= -DGENALG_DEBUG=1
 ompdebug: EXENAME 	:= ompdebug
-ompdebug: useopenmp build
+ompdebug: build
 
 omprelease: CXXFLAGS 	+= -O2
 omprelease: CXXFLAGS	+= -fopenmp
 omprelease: EXENAME 	:= omprelease
-omprelease: useopenmp build
+omprelease: build
 
 
 echo:
