@@ -5,7 +5,7 @@ indiv_t* indiv_create(
     if (nr == 0) {
         return NULL;
     }
-    indiv_t *indiv = malloc(sizeof(*indiv) * nr);
+    indiv_t *indiv = (indiv_t*)malloc(sizeof(*indiv) * nr);
     idx_t i;
     // TODO OMP tylko inicjalizacja
     for (i = 0; i < nr; ++i) {
@@ -67,7 +67,7 @@ char* indiv_to_string(
 {
     char* chromStr = chrom_to_string(indiv->genotype);
     idx_t spLen = 0, strLen = (strlen(chromStr) + 40);
-    char* str = malloc(sizeof(char) * strLen);
+    char* str = (char*)malloc(sizeof(char) * strLen);
     if ((spLen = sprintf(str, "{% 15.6f} -> <%s>", indiv->fitness, chromStr)) <= 0) {
         MYERR_ERR(-3, "Blad w funkcji individual -> string");
     }

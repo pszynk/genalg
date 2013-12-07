@@ -4,7 +4,7 @@
 popul_t *pop_create(
         idx_t size)
 {
-    popul_t *pop = malloc(sizeof(*pop) * size);
+    popul_t *pop = (popul_t*)malloc(sizeof(*pop) * size);
     pop->fitSum = 0;
     pop->genIdx = 0;
     pop->popSize = size;
@@ -31,10 +31,13 @@ void pop_eval(indiv_t *bestOne, popul_t *pop)
     real_t bestFit = 0, fitSum = 0;
     idx_t bestIdx = 0, i;
     // TODO OMP wykonywane popSize razy -> dobre miejsce na omp
-#pragma omp parallel for schedule(static) num_threads(GENALG_OMP_NUM_THREADS) reduction(+: fitSum)
-    for (i = 0; i < pop->popSize; ++i) {
-        real_t fit;
-        fit = indiv_eval(&(pop->indivs[i]));
+#pragma omp parallel for schedule(dynamic,2) reduction(+: fitSum)
+        /*num_threads(GENALG_OMP_NUM_THREADS)*/
+    for (idx_t i = 0; i < pop->popSize; ++i) {
+        real_t fit = indiv_eval(&(pop->indivs[i]));
+    /*real_t feno[g_dim];*/
+    /*chrom_to_real(pop->indivs[i].genotype, feno);*/
+    /*real_t fit = pop->indivs[i].fitness = eval_funct(feno, g_dim);*/
         fitSum += fit;
 #pragma omp critical
         {
@@ -52,6 +55,7 @@ void pop_rand(popul_t *pop)
 {
     idx_t i;
     // TODO OMP tylko inicjalziacja
+#pragma omp parallel for schedule(dynamic,2)
     for (i = 0; i < pop->popSize; ++i) {
         indiv_rand(&(pop->indivs[i]));
     }
@@ -137,7 +141,6 @@ idx_t pop_select_best(
         }
     }
 
-    // TODO OMP za proste na wątki?
     for (i = 0; i < size; ++i) {
         selection[i] = idxs[i % kbest];
     }
@@ -150,14 +153,9 @@ idx_t pop_select_tournament(
         idx_t *selection,
         idx_t size)
 {
-    idx_t i, s, t;
-    idx_t last, rnd, rndidx,
-          bestIdx  = 0,
-          toursize = g_selParam;
+    idx_t i, s;
+    idx_t toursize = g_selParam;
     idx_t idxs[pop->popSize];
-
-    real_t currFit,
-           bestFit = -1;
 
     if (toursize < 1) {
         MYERR_ERR(-2, "Rozmar turnieju jest mniejszy od 1!");
@@ -165,16 +163,21 @@ idx_t pop_select_tournament(
 
     //init idxs table
     // TODO też w best, oddzielna funckja?
+#pragma omp parallel for
     for (i = 0; i < pop->popSize; ++i) {
         idxs[i] = i;
     }
     // przeprowadź size turnieji
     // TODO OMP dobre UWAGA na zmienne last (może deklaracja w pętli?)
+#pragma omp parallel for schedule(dynamic,1) firstprivate(idxs)
     for (s = 0; s < size; ++s) {
         // ile zostało możliwych indeksów do wyboru
-        last = pop->popSize;
+        idx_t last = pop->popSize - 1;
         // sprawdzaj kolejnych uczesników
         // TODO OMP NIE MOŻNA ZRÓWNOLEGLIC, zależy od poprzedniej iteracji
+        idx_t t, rnd, rndidx,
+              bestIdx = 0;
+        real_t currFit, bestFit = -1;
         for (t = 0; t < toursize; ++t) {
             rnd = RANDOM_FROM(0, last);
             rndidx = idxs[rnd];
@@ -202,7 +205,7 @@ void pop_generate(
 {
     idx_t i;
     // TODO OMP niezłe miejsce na zrównoleglenie
-#pragma omp parallel for schedule(static) num_threads(GENALG_OMP_NUM_THREADS)
+/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
     for (i = 0; i < nsel; ++i) {
         /*printf("i %d sel[i] %d\n", i, selection[i]);*/
         indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[selection[i]]));
@@ -216,10 +219,10 @@ void pop_cross(
     idx_t i, ncross = 0;
     idx_t icross[pop->popSize];
     // TODO OMP niezłe
-#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
+/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
     for (i = 0; i < pop->popSize; ++i) {
         if (RANDOM_0_TO_1 <= g_pCross) {
-#pragma omp critical
+/*#pragma omp critical*/
             {
             icross[ncross++] = i;
             }
@@ -229,7 +232,8 @@ void pop_cross(
 
     ncross &= (idx_t) (~1);
     // TODO OMP nie wiem czy warto, ale może być  ich sporo
-#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
+/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
+#pragma omp for schedule(dynamic, 2)
     for (i = 0; i < ncross; i+=2) {
         indiv_xcross(&(pop->indivs[icross[i]]), &(pop->indivs[icross[i+1]]));
     }
@@ -240,7 +244,8 @@ void pop_mut(
 {
     idx_t i;
     // TODO OMP chyba warto
-#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)
+/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
+#pragma omp parallel for schedule(dynamic,5)
     for (i = 0; i < pop->popSize; ++i) {
         indiv_mut(&(pop->indivs[i]));
     }
@@ -250,7 +255,7 @@ char* pop_to_string(
         const popul_t *pop)
 {
     char *chromStr = indiv_to_string(pop->indivs);
-    char *str = malloc(sizeof(char) * (strlen(chromStr) * (pop->popSize + 10) +  pop->popSize * 5 + 200));
+    char *str = (char*)malloc(sizeof(char) * (strlen(chromStr) * (pop->popSize + 10) +  pop->popSize * 5 + 200));
     idx_t slen = 0;
     str[0] = '\0';
     if ((slen =
@@ -280,11 +285,11 @@ char* pop_to_string(
 
 popStats_t *popStats_create()
 {
-    popStats_t *popstat     = malloc(sizeof(*popstat));
-    popstat->evalResultMean = malloc(sizeof(*(popstat->evalResultMean)) * g_dim);
-    popstat->evalResultSD  = malloc(sizeof(*(popstat->evalResultSD)) * g_dim);
-    popstat->objResultsMean  = malloc(sizeof(*(popstat->objResultsMean)) * g_dim);
-    popstat->objResultsSD   = malloc(sizeof(*(popstat->objResultsSD)) * g_dim);
+    popStats_t *popstat     = (popStats_t*)malloc(sizeof(*popstat));
+    popstat->evalResultMean = (real_t*)malloc(sizeof(*(popstat->evalResultMean)) * g_dim);
+    popstat->evalResultSD  = (real_t*)malloc(sizeof(*(popstat->evalResultSD)) * g_dim);
+    popstat->objResultsMean  = (real_t*)malloc(sizeof(*(popstat->objResultsMean)) * g_dim);
+    popstat->objResultsSD   = (real_t*)malloc(sizeof(*(popstat->objResultsSD)) * g_dim);
     return popstat;
 }
 
@@ -309,7 +314,7 @@ popStats_t *popStats_generate(
            tmpRealChrom[g_dim];
 
     if (popstat == NULL) {
-        popstat = popStats_create(pop->popSize);
+        popstat = popStats_create();
     }
 
     popstat->popSize = pop->popSize;
@@ -377,7 +382,7 @@ char *popStat_to_string(
         popStats_t *popstat)
 {
     idx_t strl = (g_dim * 4 * 20 + 600);
-    char *str = malloc(sizeof(char) * strl);
+    char *str = (char*)malloc(sizeof(char) * strl);
     char tmpstr[500];
     idx_t i, slen = 0;
 

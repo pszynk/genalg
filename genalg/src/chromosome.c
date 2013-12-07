@@ -14,7 +14,7 @@ static void swap_bitvec(bitvec_t *a, bitvec_t *b)
 
 chrom_t chrom_create()
 {
-    chrom_t chrom = malloc(sizeof(chrom_t*) * g_bitvecPerChrom);
+    chrom_t chrom = (bitvec_t*)malloc(sizeof(chrom_t*) * g_bitvecPerChrom);
     if (chrom == NULL) {
         MYERR_ERR(-2, "Nie udalo sie zaalokowac pamieci na chromosom: %d bajtow",
                 sizeof(chrom_t*) * g_bitvecPerChrom);
@@ -128,7 +128,7 @@ char* chrom_to_string(
 {
     char *bvStr = bitvec_to_string(chrom + g_bitvecPerChrom - 1);
     idx_t bvStrLen = strlen(bvStr);
-    char *str = malloc(
+    char *str = (char*)malloc(
             sizeof(char) * (
                 bvStrLen * g_bitvecPerChrom
                 + g_bitvecPerChrom));

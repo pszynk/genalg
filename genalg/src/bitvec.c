@@ -70,7 +70,7 @@ char* bitvec_to_string(
         const bitvec_t *bitvec)
 {
     bitvec_t bv = (*bitvec);
-    char* str = malloc(sizeof(char) * (BIT_PER_BITVEC + (BIT_PER_BITVEC / BIT_PER_BYTE)));
+    char* str = (char*)malloc(sizeof(char) * (BIT_PER_BITVEC + (BIT_PER_BITVEC / BIT_PER_BYTE)));
     idx_t
         i = BIT_PER_BITVEC + (BIT_PER_BITVEC / BIT_PER_BYTE) - 1,
         j = 0;

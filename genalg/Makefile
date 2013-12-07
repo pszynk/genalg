@@ -8,7 +8,7 @@ CXX 		= gcc
 CPPFLAGS 	=
 
 # Compiler flags
-CXXFLAGS 	= -g -Wall -fmessage-length=0
+CXXFLAGS 	= -std=c99 -Wall -fmessage-length=0
 
 # Linker flags
 LDFLAGS 	=
