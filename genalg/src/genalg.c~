@@ -2,10 +2,11 @@
  * Plik glowny z funkcja main
  */
 /*
+ * TODO:
+ * - parametr do ustawiania seed reand
  *
  */
 #include <stdio.h>
-#include <getopt.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -17,10 +18,8 @@
 #include "galgorithm.h"
 #include "bitvec.h"
 #include "population.h"
-#include "grandom.h"
 
 #include "griewank.h"
-#include "ackley.h"
 #include "kwadratx.h"
 
 // ilość argumentów w programie
@@ -89,10 +88,10 @@ void print_params()
     printf("  *************************************************************\n");
     printf("\n");
     printf(
-        "  %*s -> %u\n"
-        "  %*s -> %u\n"
-        "  %*s -> %u\n"
-        "  %*s -> %u\n"
+        "  %*s -> %d\n"
+        "  %*s -> %d\n"
+        "  %*s -> %d\n"
+        "  %*s -> %d\n"
         "  %*s -> %f\n"
         "  %*s -> %f\n",
         padding, "Seed", g_seed,
@@ -210,8 +209,8 @@ void set_func_param(const char *optarg)
 void init_globals()
 {
     // defaults
-    int           def_VERBOSELVL  = 0;
-    unsigned long def_seed        = time(NULL);
+    int      def_VERBOSELVL       = 0;
+    unsigned def_seed             = time(NULL);
 
     idx_t  def_dim                = 2;
     idx_t  def_maxGen             = 50;
@@ -445,19 +444,19 @@ void read_params(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     real_t result;
-    grstate_t grstate;
+    stats_t stats;
 
     /* wczytanie parametrow */
     read_params(argc, argv);
     /* wartości domyślen zmiennych */
     init_globals();
-    grstate_seed(&grstate, g_seed);
+    srand(g_seed);
     if (g_VERBOSELVL > 0) {
         print_params();
     }
     /* alokacja pamieci */
     /* funkcja algorytmu */
-    result = galgorithm(&grstate);
+    result = galgorithm(&stats);
     /* zwrocenie wynikow */
     printf("RESULT->%f\n", g_revalFunct(result));
     /*printf("\nRESULT -> %f\n", result);*/
