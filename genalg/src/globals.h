@@ -2,6 +2,7 @@
 #define GLOBALS_H
 
 #include "types.h"
+#include "grandom.h"
 
 enum Functions {
     GRIEWANK,
@@ -48,6 +49,7 @@ real_t (*g_evalFunct)    (const real_t*, idx_t),
 typedef struct _popul_t popul_t;
 
 idx_t (*g_selFunct) (
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size);

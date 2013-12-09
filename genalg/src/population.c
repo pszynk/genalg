@@ -16,9 +16,7 @@ void pop_destroy(
         popul_t *pop)
 {
     idx_t i;
-    // TODO OMP tylko finalziacja
     for (i = 0; i < pop->popSize; ++i) {
-        /*indiv_destory(&(pop->indivs[i]));*/
         indiv_destory(pop->indivs + i);
     }
     free(pop->indivs);
@@ -26,18 +24,34 @@ void pop_destroy(
     pop = NULL;
 }
 
+void pop_rand(
+        grstate_t *grstate,
+        popul_t *pop)
+{
+    idx_t i;
+#pragma omp parallel
+    {
+        grstate_t _thread_grstate;
+        grstate_shift(&_thread_grstate, grstate, omp_get_thread_num());
+#pragma omp for schedule(runtime)
+        for (i = 0; i < pop->popSize; ++i) {
+            indiv_rand(grstate, &(pop->indivs[i]));
+        }
+#pragma omp master
+        {
+            grstate_copy(grstate, &_thread_grstate);
+        }
+    }
+}
+
+
 void pop_eval(indiv_t *bestOne, popul_t *pop)
 {
     real_t bestFit = 0, fitSum = 0;
-    idx_t bestIdx = 0, i;
-    // TODO OMP wykonywane popSize razy -> dobre miejsce na omp
-#pragma omp parallel for schedule(dynamic,2) reduction(+: fitSum)
-        /*num_threads(GENALG_OMP_NUM_THREADS)*/
+    idx_t bestIdx = 0;
+#pragma omp parallel for reduction(+: fitSum)
     for (idx_t i = 0; i < pop->popSize; ++i) {
         real_t fit = indiv_eval(&(pop->indivs[i]));
-    /*real_t feno[g_dim];*/
-    /*chrom_to_real(pop->indivs[i].genotype, feno);*/
-    /*real_t fit = pop->indivs[i].fitness = eval_funct(feno, g_dim);*/
         fitSum += fit;
 #pragma omp critical
         {
@@ -51,18 +65,9 @@ void pop_eval(indiv_t *bestOne, popul_t *pop)
     indiv_copy(bestOne, &(pop->indivs[bestIdx]));
 }
 
-void pop_rand(popul_t *pop)
-{
-    idx_t i;
-    // TODO OMP tylko inicjalziacja
-#pragma omp parallel for schedule(dynamic,2)
-    for (i = 0; i < pop->popSize; ++i) {
-        indiv_rand(&(pop->indivs[i]));
-    }
-}
-
 
 idx_t pop_select_rulette(
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size)
@@ -70,25 +75,35 @@ idx_t pop_select_rulette(
     idx_t i, j;
     real_t psum = 0, rot;
     real_t sprob[pop->popSize];
-    // TODO OMP dobre
+
     for (i = 0; i < pop->popSize; ++i) {
         psum += (pop->indivs[i].fitness / pop->fitSum);
         sprob[i] = psum;
     }
-    // TODO OMP tez dobre
-    for (i = 0; i < size; ++i) {
-        rot = RANDOM_0_TO_1;
-        j = 0;
-        while(sprob[j] < rot) {
-            ++j;
+
+#pragma omp parallel
+    {
+        grstate_t _thread_grstate;
+        grstate_shift(&_thread_grstate, grstate, omp_get_thread_num());
+#pragma omp for schedule(runtime)
+        for (i = 0; i < size; ++i) {
+            rot = RANDOM_0_TO_1(_thread_grstate.xsubi);
+            j = 0;
+            while(sprob[j] < rot) {
+                ++j;
+            }
+            selection[i] = j;
         }
-        selection[i] = j;
+#pragma omp master
+        {
+            grstate_copy(grstate, &_thread_grstate);
+        }
     }
     return size;
 }
 
-#include <assert.h>
 idx_t pop_select_best(
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size)
@@ -101,9 +116,6 @@ idx_t pop_select_best(
     real_t split, fit;
     kbest = fmin(kbest, pop->popSize);
 
-    // TODO taka inicjalizacja tablcy pojawia się też w turniejach
-    // może oddzielna funkcja?
-    // TODO OMP za proste na wątki?
     for (i = 0; i < pop->popSize; ++i) {
         idxs[i] = i;
     }
@@ -112,10 +124,6 @@ idx_t pop_select_best(
         left = from;
         right = to;
         split = pop->indivs[idxs[(left + right) / 2]].fitness;
-        /*
-         *printf("[%d   %d]\n", from, to);
-         *printf("split po: %f [%d]\n", split, (left+right)/2);
-         */
 
         while (left < right) {
             fit = pop->indivs[idxs[left]].fitness;
@@ -130,7 +138,6 @@ idx_t pop_select_best(
         }
 
         if (pop->indivs[idxs[left]].fitness < split) {
-            /*assert(left != 0);*/
             --left;
         }
 
@@ -149,50 +156,59 @@ idx_t pop_select_best(
 }
 
 idx_t pop_select_tournament(
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size)
 {
-    idx_t i, s;
     idx_t toursize = g_selParam;
-    idx_t idxs[pop->popSize];
 
     if (toursize < 1) {
         MYERR_ERR(-2, "Rozmar turnieju jest mniejszy od 1!");
     }
 
-    //init idxs table
-    // TODO też w best, oddzielna funckja?
-#pragma omp parallel for
-    for (i = 0; i < pop->popSize; ++i) {
-        idxs[i] = i;
-    }
-    // przeprowadź size turnieji
-    // TODO OMP dobre UWAGA na zmienne last (może deklaracja w pętli?)
-#pragma omp parallel for schedule(dynamic,1) firstprivate(idxs)
-    for (s = 0; s < size; ++s) {
-        // ile zostało możliwych indeksów do wyboru
-        idx_t last = pop->popSize - 1;
-        // sprawdzaj kolejnych uczesników
-        // TODO OMP NIE MOŻNA ZRÓWNOLEGLIC, zależy od poprzedniej iteracji
-        idx_t t, rnd, rndidx,
-              bestIdx = 0;
-        real_t currFit, bestFit = -1;
-        for (t = 0; t < toursize; ++t) {
-            rnd = RANDOM_FROM(0, last);
-            rndidx = idxs[rnd];
-            currFit = pop->indivs[idxs[rndidx]].fitness;
-            // obecny zwycięzca
-            if (currFit > bestFit) {
-                bestFit = currFit;
-                bestIdx = rndidx;
-            }
-            // wybrany indeks przerzuć na koniec
-            idxs[rnd] = idxs[last-1];
-            idxs[last-1] = rndidx;
-            --last;
+#pragma omp parallel default(none) shared(grstate, pop, selection) firstprivate(toursize, size)
+    {
+        idx_t i, s;
+        idx_t idxs[pop->popSize];
+        for (i = 0; i < pop->popSize; ++i) {
+            idxs[i] = i;
         }
-        selection[s] = bestIdx;
+        grstate_t _thread_grstate;
+        grstate_shift(&_thread_grstate, grstate, omp_get_thread_num());
+
+        // przeprowadź size turniejów
+#pragma omp for schedule(runtime)
+        for (s = 0; s < size; ++s) {
+            // ile zostało możliwych indeksów do wyboru
+            idx_t last = pop->popSize - 1;
+
+            idx_t t, rnd, rndidx,
+                  bestIdx = 0;
+
+            real_t currFit, bestFit = -1;
+
+            // sprawdzaj kolejnych uczesników
+            for (t = 0; t < toursize; ++t) {
+                rnd = RANDOM_FROM(_thread_grstate.xsubi, 0, last);
+                rndidx = idxs[rnd];
+                currFit = pop->indivs[idxs[rndidx]].fitness;
+                // obecny zwycięzca
+                if (currFit > bestFit) {
+                    bestFit = currFit;
+                    bestIdx = rndidx;
+                }
+                // wybrany indeks przerzuć na koniec
+                idxs[rnd] = idxs[last-1];
+                idxs[last-1] = rndidx;
+                --last;
+            }
+            selection[s] = bestIdx;
+        }
+#pragma omp master
+        {
+            grstate_copy(grstate, &_thread_grstate);
+        }
     }
     return size;
 }
@@ -204,50 +220,63 @@ void pop_generate(
         idx_t nsel)
 {
     idx_t i;
-    // TODO OMP niezłe miejsce na zrównoleglenie
-/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
+#pragma omp for schedule(runtime)
     for (i = 0; i < nsel; ++i) {
-        /*printf("i %d sel[i] %d\n", i, selection[i]);*/
         indiv_copy(&(newPop->indivs[i]), &(oldPop->indivs[selection[i]]));
     }
     newPop->popSize = oldPop->popSize; // population size doesn't change in new population
 }
 
 void pop_cross(
+        grstate_t *grstate,
         popul_t *pop)
 {
     idx_t i, ncross = 0;
     idx_t icross[pop->popSize];
-    // TODO OMP niezłe
-/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
-    for (i = 0; i < pop->popSize; ++i) {
-        if (RANDOM_0_TO_1 <= g_pCross) {
-/*#pragma omp critical*/
-            {
-            icross[ncross++] = i;
+#pragma omp parallel
+    {
+        grstate_t _thread_grstate;
+        grstate_shift(&_thread_grstate, grstate, omp_get_thread_num());
+#pragma omp for schedule(runtime)
+        for (i = 0; i < pop->popSize; ++i) {
+            if (RANDOM_0_TO_1(_thread_grstate.xsubi) <= g_pCross) {
+#pragma omp critical
+                {
+                    icross[ncross++] = i;
+                }
             }
         }
+#pragma omp master
+        {
+            grstate_copy(grstate, &_thread_grstate);
+        }
     }
-    shuffle_array(icross, ncross);
+    shuffle_array(grstate, icross, ncross);
 
     ncross &= (idx_t) (~1);
-    // TODO OMP nie wiem czy warto, ale może być  ich sporo
-/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
-#pragma omp for schedule(dynamic, 2)
+#pragma omp for schedule(runtime)
     for (i = 0; i < ncross; i+=2) {
-        indiv_xcross(&(pop->indivs[icross[i]]), &(pop->indivs[icross[i+1]]));
+        indiv_xcross(grstate, &(pop->indivs[icross[i]]), &(pop->indivs[icross[i+1]]));
     }
 }
 
 void pop_mut(
+        grstate_t *grstate,
         popul_t *pop)
 {
     idx_t i;
-    // TODO OMP chyba warto
-/*#pragma omp parallel for num_threads(GENALG_OMP_NUM_THREADS)*/
-#pragma omp parallel for schedule(dynamic,5)
-    for (i = 0; i < pop->popSize; ++i) {
-        indiv_mut(&(pop->indivs[i]));
+#pragma omp parallel
+    {
+        grstate_t _thread_grstate;
+        grstate_shift(&_thread_grstate, grstate, omp_get_thread_num());
+#pragma omp for schedule(runtime)
+        for (i = 0; i < pop->popSize; ++i) {
+            indiv_mut(&_thread_grstate, &(pop->indivs[i]));
+        }
+#pragma omp master
+        {
+            grstate_copy(grstate, &_thread_grstate);
+        }
     }
 }
 
@@ -272,7 +301,6 @@ char* pop_to_string(
     strcat(str, chromStr);
     free(chromStr);
     idx_t i;
-    // TODO OMP tylko wypisywanie
     for (i = 1; i < pop->popSize; ++i) {
         strcat(str, "\n\t");
         chromStr = indiv_to_string(pop->indivs + i);
@@ -327,13 +355,11 @@ popStats_t *popStats_generate(
     memset(tmpRes, 0, g_dim * sizeof(real_t));
     memset(tmpEval, 0, g_dim * sizeof(real_t));
 
-    // TODO OMP nieważna funkcja
     for (i = 0; i < pop->popSize; ++i) {
         tmpFS += pop->indivs[i].fitness;
         tmpOF += reval_funct(pop->indivs[i].fitness);
 
         chrom_to_real(pop->indivs[i].genotype, tmpRealChrom);
-        // TODO OMP nieważne
         for (j = 0; j < g_dim; ++j) {
             tmpEval[j] += pop->indivs[i].genotype[j];
             tmpRes[j] += tmpRealChrom[j];
@@ -343,7 +369,6 @@ popStats_t *popStats_generate(
     popstat->fitMean = tmpFS / pop->popSize;
     popstat->objFuncMean = tmpOF / pop->popSize;
 
-    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         popstat->evalResultMean[i] = tmpEval[i] / pop->popSize;
         popstat->objResultsMean[i] = tmpRes[i] / pop->popSize;
@@ -354,13 +379,11 @@ popStats_t *popStats_generate(
     memset(tmpRes, 0, g_dim * sizeof(real_t));
     memset(tmpEval, 0, g_dim * sizeof(real_t));
 
-    // TODO OMP nieważne
     for (i = 0; i < pop->popSize; ++i) {
         tmpFS += pow(pop->indivs[i].fitness - popstat->fitMean, 2.0);
         tmpOF += pow(reval_funct(pop->indivs[i].fitness) - popstat->objFuncMean, 2.0);
 
         chrom_to_real(pop->indivs[i].genotype, tmpRealChrom);
-        // TODO OMP nieważne
         for (j = 0; j < g_dim; ++j) {
             tmpEval[j] += pow(pop->indivs[i].genotype[j] - popstat->evalResultMean[j], 2.0);
             tmpRes[j] += pow(tmpRealChrom[j] - popstat->objResultsMean[j], 2.0);
@@ -370,7 +393,6 @@ popStats_t *popStats_generate(
     popstat->fitSD = sqrt(tmpFS / pop->popSize);
     popstat->objFuncSD = sqrt(tmpOF / pop->popSize);
 
-    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         popstat->evalResultSD[i] = sqrt(tmpEval[i] / pop->popSize);
         popstat->objResultsSD[i] = sqrt(tmpRes[i] / pop->popSize);
@@ -424,7 +446,6 @@ char *popStat_to_string(
         MYERR_ERR(-3, "Blad w population stats -> string");
     }
     strcat(str, tmpstr);
-    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         if ((slen =
               sprintf(
@@ -450,7 +471,6 @@ char *popStat_to_string(
         MYERR_ERR(-3, "Blad w population stats -> string");
     }
     strcat(str, tmpstr);
-    // TODO OMP nieważne
     for (i = 0; i < g_dim; ++i) {
         if ((slen =
               sprintf(

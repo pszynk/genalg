@@ -7,7 +7,6 @@ indiv_t* indiv_create(
     }
     indiv_t *indiv = (indiv_t*)malloc(sizeof(*indiv) * nr);
     idx_t i;
-    // TODO OMP tylko inicjalizacja
     for (i = 0; i < nr; ++i) {
         indiv[i].fitness = 0;
         indiv[i].genotype = chrom_create();
@@ -31,9 +30,10 @@ void indiv_copy(
 }
 
 void indiv_rand(
+        grstate_t *grstate,
         indiv_t *indiv)
 {
-    chrom_rand(indiv->genotype);
+    chrom_rand(grstate, indiv->genotype);
     indiv->fitness = 0;
 }
 
@@ -48,17 +48,19 @@ real_t indiv_eval(
 
 
 void indiv_xcross(
+        grstate_t *grstate,
         indiv_t *indiv1,
         indiv_t *indiv2)
 {
-    chrom_xcross(indiv1->genotype, indiv2->genotype);
+    chrom_xcross(grstate, indiv1->genotype, indiv2->genotype);
 }
 
 
 void indiv_mut(
+        grstate_t *grstate,
         indiv_t *indiv)
 {
-    chrom_mut(indiv->genotype);
+    chrom_mut(grstate, indiv->genotype);
 }
 
 

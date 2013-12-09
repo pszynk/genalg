@@ -4,15 +4,16 @@
 #include "types.h"
 #include "locales.h"
 #include "globals.h"
-#include "utils.h"
+#include "grandom.h"
 #include "myerr.h"
 #include <stdio.h>
 
 #define MAX_BITVEC_VALUE ((bitvec_t) ~(0))
 #define BIT_PER_BITVEC (sizeof(bitvec_t) * BIT_PER_BYTE)
-#define RANDOM_BITVEC ((((bitvec_t)rand())<<15) + (bitvec_t)rand())
+//#define RANDOM_BITVEC(xsubi) ((((bitvec_t)erand48(xsubi))<<15) + (bitvec_t)rand())
 
 /*typedef uint32_t bitvec_t;*/
+#define RANDOM_BITVEC(xsubi) (((bitvec_t)nrand48(xsubi)))
 typedef uint16_t bitvec_t;
 
 bitvec_t binary_to_gray(bitvec_t num);

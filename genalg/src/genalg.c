@@ -2,8 +2,6 @@
  * Plik glowny z funkcja main
  */
 /*
- * TODO:
- * - parametr do ustawiania seed reand
  *
  */
 #include <stdio.h>
@@ -19,6 +17,7 @@
 #include "galgorithm.h"
 #include "bitvec.h"
 #include "population.h"
+#include "grandom.h"
 
 #include "griewank.h"
 #include "kwadratx.h"
@@ -70,7 +69,6 @@ void print_help_msg()
             "NAZWA    "  "%sOPIS                             "  "%sDOMYŚLNA\n"
             ,_progname, _progdec, _progname, _spaces, _spaces);
     int i;
-    // TODO OMP tylko wypisywanie
     for (i = 0; i < _PROGARGN; ++i) {
         printf("%s%s%s%s%s\n",
                 _progargs[i][0],
@@ -90,10 +88,10 @@ void print_params()
     printf("  *************************************************************\n");
     printf("\n");
     printf(
-        "  %*s -> %d\n"
-        "  %*s -> %d\n"
-        "  %*s -> %d\n"
-        "  %*s -> %d\n"
+        "  %*s -> %u\n"
+        "  %*s -> %u\n"
+        "  %*s -> %u\n"
+        "  %*s -> %u\n"
         "  %*s -> %f\n"
         "  %*s -> %f\n",
         padding, "Seed", g_seed,
@@ -211,8 +209,8 @@ void set_func_param(const char *optarg)
 void init_globals()
 {
     // defaults
-    int      def_VERBOSELVL       = 0;
-    unsigned def_seed             = time(NULL);
+    int           def_VERBOSELVL  = 0;
+    unsigned long def_seed        = time(NULL);
 
     idx_t  def_dim                = 2;
     idx_t  def_maxGen             = 50;
@@ -445,19 +443,19 @@ void read_params(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     real_t result;
-    stats_t stats;
+    grstate_t grstate;
 
     /* wczytanie parametrow */
     read_params(argc, argv);
     /* wartości domyślen zmiennych */
     init_globals();
-    srand(g_seed);
+    grstate_seed(&grstate, g_seed);
     if (g_VERBOSELVL > 0) {
         print_params();
     }
     /* alokacja pamieci */
     /* funkcja algorytmu */
-    result = galgorithm(&stats);
+    result = galgorithm(&grstate);
     /* zwrocenie wynikow */
     printf("RESULT->%f\n", g_revalFunct(result));
     /*printf("\nRESULT -> %f\n", result);*/

@@ -4,33 +4,9 @@ void print_gen_info(
         idx_t gen,
         real_t fitSum,
         real_t bestFitAll,
-        real_t bestFitCurr)
-{
-    printf("generacja: %d\n", gen);
-    printf("\tsum fit:          %f\n"
-           "\tbest eval:        %f\n"
-           "\tbest in pop eval: %f\n"
-           "\tbest val:         %f\n",
-           fitSum,
-           bestFitAll,
-           bestFitCurr,
-           g_revalFunct(bestFitAll)
-          );
-}
-void print_populs(
-        const popul_t *oldPop,
-        const popul_t *newPop)
-{
-    char* ops = pop_to_string(oldPop);
-    char* nps = pop_to_string(newPop);
-    printf("****** OLD POP \n%s\n\n****** NEW POP \n%s\n\n",
-            ops, nps);
-    free(ops);
-    free(nps);
-}
+        real_t bestFitCurr);
 
-
-real_t galgorithm(stats_t *stats)
+real_t galgorithm(grstate_t *grstate)
 {
     idx_t gen, nsel;
     real_t bestFval, f = 0, val;
@@ -42,11 +18,10 @@ real_t galgorithm(stats_t *stats)
     bestOfPop = indiv_create(1);
     oldPop = pop_create(g_popSize);
     newPop = pop_create(g_popSize);
-    pop_rand(oldPop);
+    pop_rand(grstate, oldPop);
     pop_eval(bestOfAll, oldPop);
 
     bestFval = indiv_eval(bestOfAll);
-    // TODO nie można zrównoleglić, zależy od poprzedniej iteracji
     for (gen = 1; gen <= g_maxGen; ++gen) {
         val = g_revalFunct(bestFval);
         /* jezeli jestesmy blisko minimum, przerwij algorytm */
@@ -54,14 +29,14 @@ real_t galgorithm(stats_t *stats)
             break;
         }
         /* selection */
-        nsel = g_selFunct(oldPop, selection, oldPop->popSize);
+        nsel = g_selFunct(grstate, oldPop, selection, oldPop->popSize);
         /* generate new pop */
         pop_generate(newPop, oldPop, selection, nsel);
         newPop->genIdx=gen;
         /* crossover */
-        pop_cross(newPop);
+        pop_cross(grstate, newPop);
         /* mutation */
-        pop_mut(newPop);
+        pop_mut(grstate, newPop);
         /* evaluate */
         pop_eval(bestOfPop, newPop);
         f = indiv_eval(bestOfPop);
@@ -95,7 +70,6 @@ real_t galgorithm(stats_t *stats)
         real_t xxx[g_dim];
         chrom_to_real(bestOfAll->genotype, xxx);
         idx_t i;
-        // TODO OMP tylko wypisywanie
         for (i = 0; i < g_dim; ++i) {
             printf("%f, ", xxx[i]);
         }
@@ -111,3 +85,35 @@ real_t galgorithm(stats_t *stats)
 
     return bestFval;
 }
+
+void print_gen_info(
+        idx_t gen,
+        real_t fitSum,
+        real_t bestFitAll,
+        real_t bestFitCurr)
+{
+    printf("generacja: %d\n", gen);
+    printf("\tsum fit:          %f\n"
+           "\tbest eval:        %f\n"
+           "\tbest in pop eval: %f\n"
+           "\tbest val:         %f\n",
+           fitSum,
+           bestFitAll,
+           bestFitCurr,
+           g_revalFunct(bestFitAll)
+          );
+}
+
+void print_populs(
+        const popul_t *oldPop,
+        const popul_t *newPop)
+{
+    char* ops = pop_to_string(oldPop);
+    char* nps = pop_to_string(newPop);
+    printf("****** OLD POP \n%s\n\n****** NEW POP \n%s\n\n",
+            ops, nps);
+    free(ops);
+    free(nps);
+}
+
+

@@ -1,8 +1,8 @@
 #include "chromosome.h"
 
-static idx_t _random_allele()
+static idx_t _random_allele(grstate_t *grstate)
 {
-    return RANDOM_FROM(1, g_bitPerChrom-1);
+    return RANDOM_FROM(grstate->xsubi, 1, g_bitPerChrom-1);
 }
 
 static void swap_bitvec(bitvec_t *a, bitvec_t *b)
@@ -33,20 +33,20 @@ void chrom_copy(chrom_t to, const chrom_t from)
     memcpy(to, from, g_bitvecPerChrom * sizeof(bitvec_t));
 }
 
-void chrom_rand(chrom_t chrom)
+void chrom_rand(grstate_t *grstate, chrom_t chrom)
 {
     idx_t i;
-    // TODO OMP tylko inicjalizacja
     for (i = 0; i < g_bitvecPerChrom; ++i) {
-        chrom[i] = binary_to_gray(RANDOM_BITVEC);
+        chrom[i] = binary_to_gray(RANDOM_BITVEC(grstate->xsubi));
     }
 }
 
 idx_t chrom_xcross(
+        grstate_t *grstate,
         chrom_t chrom1,
         chrom_t chrom2)
 {
-    idx_t nbit = _random_allele();
+    idx_t nbit = _random_allele(grstate);
     /*printf("xcross> CHROM CORSS NA BICIE %d\n", nbit);*/
     if (nbit >= g_bitPerChrom) {
         MYERR_ERR(-1, "%s: %s -> (%d >= %d)",
@@ -63,7 +63,6 @@ idx_t chrom_xcross(
      * 1' := ccc/x/bbbbbb   2' := aaa/y/dddddd
      */
     idx_t i;
-    // TODO OMP chyba za mało razy
     for (i = nBVec + 1; i < g_bitvecPerChrom; ++i) {
         swap_bitvec(chrom1 + i, chrom2 + i);
     }
@@ -86,12 +85,12 @@ idx_t chrom_xcross(
 
 
 void chrom_mut(
+        grstate_t *grstate,
         chrom_t chrom)
 {
     idx_t i, nBVec, nBitInBVec;
-    // TODO OMP petla po bit per chrom (max 100 * 16 lub 32), wykonywana popSize * gen razy
     for (i = 0; i < g_bitPerChrom; ++i) {
-        if (RANDOM_0_TO_1 <= g_pMut) {
+        if (RANDOM_0_TO_1(grstate->xsubi) <= g_pMut) {
             /*nBVec = i / g_bitPerChrom;*/
             nBVec = i / BIT_PER_BITVEC;
             nBitInBVec = i % BIT_PER_BITVEC;
@@ -116,7 +115,6 @@ void chrom_to_real(
         real_t *value)
 {
     idx_t i;
-    // TODO OMP petla po dim, wykonywana popSize * gen razy
     for (i = 0; i < g_bitvecPerChrom; ++i) {
         value[i] = binary_to_real(
                 gray_to_binary(chrom[i]));
@@ -136,7 +134,6 @@ char* chrom_to_string(
     strcpy(str, bvStr);
     free(bvStr);
     int i;
-    // TODO OMP wypisywanie
     for(i = g_bitvecPerChrom - 2; i >= 0; --i) {
         strcat(str, "|");
         bvStr = bitvec_to_string(chrom + i);

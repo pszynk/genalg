@@ -4,7 +4,9 @@
 /*
  * typy danych i funkcje zwiazane z populacja
  */
+#include <stdlib.h>
 #include <math.h>
+#include <omp.h>
 
 #include "types.h"
 #include "individual.h"
@@ -50,6 +52,7 @@ void pop_eval(
         popul_t *pop);
 
 void pop_rand(
+        grstate_t *grstate,
         popul_t *pop);
 
 void pop_generate(
@@ -59,22 +62,27 @@ void pop_generate(
         idx_t nsel);
 
 void pop_cross(
+        grstate_t *grstate,
         popul_t *pop);
 
 void pop_mut(
+        grstate_t *grstate,
         popul_t *pop);
 
 idx_t pop_select_rulette(
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size);
 
 idx_t pop_select_best(
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size);
 
 idx_t pop_select_tournament(
+        grstate_t *grstate,
         const popul_t *pop,
         idx_t *selection,
         idx_t size);

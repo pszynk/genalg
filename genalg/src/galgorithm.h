@@ -10,10 +10,6 @@
 
 #define MAX_GENERATIONS (100 * 1000)
 
-typedef struct stats_t {
-
-} stats_t;
-
 /*
  * Funkcja - algorytm genetyczny
  * argumenty -> paczka parametrow (ile generacji)
@@ -21,7 +17,7 @@ typedef struct stats_t {
  * paczka wynikow
  *
  */
-real_t galgorithm(stats_t *stats);
+real_t galgorithm(grstate_t *grstate);
 
 
 

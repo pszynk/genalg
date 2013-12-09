@@ -26,13 +26,17 @@ void chrom_copy(
         chrom_t to,
         const chrom_t from);
 
-void chrom_rand(chrom_t chrom);
+void chrom_rand(
+        grstate_t *grstate,
+        chrom_t chrom);
 
 idx_t chrom_xcross(
+        grstate_t *grstate,
         chrom_t chrom1,
         chrom_t chrom2);
 
 void chrom_mut(
+        grstate_t *grstate,
         chrom_t chrom);
 
 void chrom_to_real(

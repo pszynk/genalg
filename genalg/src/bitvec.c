@@ -18,8 +18,6 @@ bitvec_t binary_to_gray(bitvec_t num)
 bitvec_t gray_to_binary(bitvec_t num)
 {
     bitvec_t mask;
-    // TODO OMP wykonywane 16-32 razy (chyba się nie opłaca)
-    // sama funkcja wykonywana dim * popSize * gen razy (dużo)
     for (mask = num >> 1; mask != 0; mask = mask >> 1)
     {
         num = num ^ mask;

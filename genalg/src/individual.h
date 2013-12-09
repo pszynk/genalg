@@ -26,16 +26,19 @@ void indiv_copy(
         const indiv_t *from);
 
 void indiv_rand(
+        grstate_t *grstate,
         indiv_t *indiv);
 
 real_t indiv_eval(
         indiv_t *indiv);
 
 void indiv_xcross(
+        grstate_t *grstate,
         indiv_t *indiv1,
         indiv_t *indiv2);
 
 void indiv_mut(
+        grstate_t *grstate,
         indiv_t *indiv);
 
 char* indiv_to_string(
