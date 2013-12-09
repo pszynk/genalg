@@ -2,12 +2,12 @@
 
 real_t griew_eval(const real_t *args, idx_t nargs)
 {
-    return ((40.0 * g_dim + 2.0) - griewank(args, nargs));
+    return ((GRIEW_UB * g_dim + 2.0) - griewank(args, nargs));
 }
 
 real_t griew_reval(real_t eval)
 {
-    return ((40.0 * g_dim  + 2.0) - eval);
+    return ((GRIEW_UB * g_dim  + 2.0) - eval);
 }
 
 real_t griewank(const real_t *args, idx_t nargs)
@@ -24,5 +24,5 @@ real_t griewank(const real_t *args, idx_t nargs)
         sum += x * x;
         prod *= cos(x / (i + 1));
     }
-    return (sum / 40.0) + (1 - prod);
+    return (sum / GRIEW_UB) + (1 - prod);
 }

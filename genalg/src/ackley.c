@@ -2,17 +2,17 @@
 
 real_t ackley_eval(const real_t *args, idx_t nargs)
 {
-    return ((30.0 * g_dim + 40.0) - ackley(args, nargs));
+    return (ACKLEY_MAX_VAL - ackley(args, nargs));
 }
 
 real_t ackley_reval(real_t eval)
 {
-    return ((30.0 * g_dim  + 40.0) - eval);
+    return (ACKLEY_MAX_VAL - eval);
 }
 
 real_t ackley(const real_t *args, idx_t nargs)
 {
-    real_t sum1 = 0, sum2 = 0, x;
+    real_t sum1 = 0.0, sum2 = 0.0, x;
     idx_t i;
     for (i = 0; i < nargs; ++i) {
         x = args[i];
@@ -24,5 +24,5 @@ real_t ackley(const real_t *args, idx_t nargs)
         sum1 += x * x;
         sum2 += cos(x*2*M_PI);
     }
-    return -20*exp(-0.2*sqrt(sum1/g_dim))-exp(sum2/g_dim)+20;
+    return -20.0*exp(-0.2*sqrt(sum1/nargs))-exp(sum2/nargs)+20.0+exp(1);
 }

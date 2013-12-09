@@ -9,7 +9,7 @@
 
 #define ACKLEY_LB -40.0
 #define ACKLEY_UB  40.0
-#define ACKLEY_MAX_VAL(dim) (40.0 * (dim) + 1)
+#define ACKLEY_MAX_VAL 24
 
 real_t ackley_eval(const real_t *args, idx_t nargs);
 real_t ackley_reval(real_t eval);
