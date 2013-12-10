@@ -166,8 +166,10 @@ idx_t pop_select_tournament(
     if (toursize < 1) {
         MYERR_ERR(-2, "Rozmar turnieju jest mniejszy od 1!");
     }
+    idx_t bestIdx = 0;
+    real_t bestFit = -1;
 
-#pragma omp parallel default(none) shared(grstate, pop, selection) firstprivate(toursize, size)
+//#pragma omp parallel default(none) shared(grstate, pop, selection, bestIdx, bestFit) firstprivate(toursize, size)
     {
         idx_t i, s;
         idx_t idxs[pop->popSize];
@@ -178,15 +180,16 @@ idx_t pop_select_tournament(
         grstate_shift(&_thread_grstate, grstate, omp_get_thread_num());
 
         // przeprowadź size turniejów
-#pragma omp for schedule(runtime)
+//#pragma omp for schedule(runtime)
         for (s = 0; s < size; ++s) {
             // ile zostało możliwych indeksów do wyboru
             idx_t last = pop->popSize - 1;
 
-            idx_t t, rnd, rndidx,
-                  bestIdx = 0;
+            idx_t t, rnd, rndidx;
+            //idx_t bestIdx = 0;
 
-            real_t currFit, bestFit = -1;
+            real_t currFit;
+            //real_t bestFit = -1;
 
             // sprawdzaj kolejnych uczesników
             for (t = 0; t < toursize; ++t) {
@@ -205,7 +208,7 @@ idx_t pop_select_tournament(
             }
             selection[s] = bestIdx;
         }
-#pragma omp master
+//#pragma omp master
         {
             grstate_copy(grstate, &_thread_grstate);
         }

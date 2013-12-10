@@ -444,7 +444,7 @@ void read_params(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    real_t result;
+    real_t result, startT, endT;
     grstate_t grstate;
 
     /* wczytanie parametrow */
@@ -457,9 +457,12 @@ int main(int argc, char *argv[])
     }
     /* alokacja pamieci */
     /* funkcja algorytmu */
+    startT = omp_get_wtime();
     result = galgorithm(&grstate);
+    endT = omp_get_wtime();
     /* zwrocenie wynikow */
     printf("RESULT->%f\n", g_revalFunct(result));
+    printf("TIME->%f\n", endT-startT);
     /*printf("\nRESULT -> %f\n", result);*/
     return 0;
 }
