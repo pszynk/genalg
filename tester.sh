@@ -121,6 +121,11 @@ B_BREAK="***********************************************************************
 M_BREAK="=================================="
 S_BREAK="---------------------"
 
+
+if [ 1 -eq 0 ]
+then
+
+
 #dla jednego wątku
 #dla dwóch funkcji
 #wymiary zadania
@@ -180,11 +185,7 @@ do
     do
         echo "populacja $popsize"
         echo "$S_BREAK"
-        for T in {1..5}
-        do
-            echo "test $T"
-            exetest 1 "" "" $func $sel $gen $dim $popsize
-        done
+        test_run 1 "" "" $func $sel $gen $dim $popsize
     done
 done
 
@@ -204,17 +205,14 @@ do
     do
         echo "metoda selekcji $sel"
         echo "$S_BREAK"
-        for T in {1..5}
-        do
-            echo "test $T"
-            exetest 1 "" "" $func $sel $gen $dim $popsize
-        done
+        test_run 1 "" "" $func $sel $gen $dim $popsize
     done
 done
 
 echo
 echo
 echo
+fi
 
 ############## WIELE WĄTKÓW ##############################################################
 
@@ -230,7 +228,7 @@ for func in "GR" "AC"
 do
     echo "$B_BREAK"
     echo "funkcja $func"
-    for threads in 2 4
+    for threads in 1 2 4
     do
         echo "$S_BREAK$M_BREAK"
         echo "watkow $threads"
@@ -255,12 +253,7 @@ do
             esac
             echo "populacja $popsize"
             echo "$S_BREAK"
-            for T in {1..5}
-            do
-                echo "test $T"
-                exetest $threads "" "" $func $sel $gen $dim $popsize
-                sleep 0.5
-            done
+	    test_run $threads "" "" $func $sel $gen $dim $popsize
         done
     done
 done
@@ -283,7 +276,7 @@ for func in "GR" "AC"
 do
     echo "$B_BREAK"
     echo "funkcja $func"
-    for threads in 2 4
+    for threads in 1 2 4
     do
         echo "$S_BREAK$M_BREAK"
         echo "watkow $threads"
@@ -291,11 +284,7 @@ do
         do
             echo "populacja $popsize"
             echo "$S_BREAK"
-            for T in {1..5}
-            do
-                echo "test $T"
-                exetest $threads "" "" $func $sel $gen $dim $popsize
-            done
+	    test_run $threads "" "" $func $sel $gen $dim $popsize
         done
     done
 done
