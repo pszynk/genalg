@@ -7,7 +7,6 @@
 #define TYPES_H
 
 #include <stdint.h>
-#include <float.h>
 
 //typedef float real_t ;
 typedef double real_t ;

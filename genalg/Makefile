@@ -102,6 +102,9 @@ omprelease: CXXFLAGS	+= -fopenmp
 omprelease: EXENAME 	:= omprelease
 omprelease: build
 
+mpi: CXX        := mpicc
+mpi: EXENAME    := mpirelease
+mpi: build
 
 echo:
 	@echo CXX: $(CXX)
