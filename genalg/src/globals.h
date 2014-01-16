@@ -16,6 +16,12 @@ enum Selections {
     TOURNAMENT,
 };
 
+enum MpiVer {
+    MPI1,
+    MPI2,
+    MPI3,
+};
+
 int g_VERBOSELVL;
 
 unsigned int g_seed;
@@ -32,6 +38,8 @@ real_t g_pCross,
 enum Functions g_funcType;
 
 enum Selections g_selType;
+
+enum MpiVer g_mpiVer;
 
 //globalne parametry zależne
 idx_t g_gen,

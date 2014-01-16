@@ -25,7 +25,7 @@
 #include "kwadratx.h"
 
 // ilość argumentów w programie
-#define _PROGARGN  12
+#define _PROGARGN  13
 
 char _set_VERBOSELVL    = 0;
 char _set_seed          = 0;
@@ -38,6 +38,7 @@ char _set_pMut          = 0;
 char _set_selParamFLOAT = 0;
 char _set_funcType      = 0;
 char _set_selType       = 0;
+char _set_mpiVer        = 0;
 
 idx_t _val_selParamINT    = 0;
 real_t _val_selParamFLOAT = 0.0;
@@ -59,7 +60,8 @@ char *_progargs[_PROGARGN][3] =
         {"-m[p]    ", "Prawd. mutacji allela             ", "0.01"},
         {"-x[p]    ", "Prawd. krzyżowania dwóch osobników", " 0.2"},
         {"-s[R|T|B]", "Metoda selekcji osobników         ", "   B"},
-        {"-f[GR|AC]", "Funkcja do minimalizacji          ", "  GR"}
+        {"-f[GR|AC]", "Funkcja do minimalizacji          ", "  GR"},
+        {"-i[1|2|3]", "Wersja MPI                        ", "   1"}
     };
 
 void print_help_msg()
@@ -95,7 +97,8 @@ void print_params()
         "  %*s -> %u\n"
         "  %*s -> %u\n"
         "  %*s -> %f\n"
-        "  %*s -> %f\n",
+        "  %*s -> %f\n"
+        "  %*s -> %s\n",
         padding, "Seed", g_seed,
         padding, "Wymiar", g_dim,
         padding, "Maksymalna liczba generacji", g_maxGen,
@@ -129,6 +132,31 @@ void print_params()
             break;
         default:
             printf("NIEZNANA METODA SELECKJI!\n");
+    }
+    switch (g_mpiVer) {
+        case MPI1:
+            printf("  %*s -> %s\n",
+                    padding,
+                    "Wersja MPI",
+                    "1"
+                    );
+            break;
+        case MPI2:
+            printf("  %*s -> %s\n",
+                    padding,
+                    "Wersja MPI",
+                    "2"
+                    );
+            break;
+        case MPI3:
+            printf("  %*s -> %s\n",
+                    padding,
+                    "Wersja MPI",
+                    "3"
+                    );
+            break;
+        default:
+            printf("NIEZNANA WERSJA MPI!\n");
     }
     switch (g_funcType) {
         case GRIEWANK:
@@ -223,6 +251,7 @@ void init_globals(int mpi_num_procs, int mpi_proc_id)
     real_t def_selParamFLOAT      = 0.5;
     enum   Functions def_funcType = GRIEWANK;
     enum   Selections def_selType = BEST;
+    enum   MpiVer def_mpiVer      = MPI1;
 
     // setting defaults
     if (!_set_VERBOSELVL) {
@@ -270,6 +299,9 @@ void init_globals(int mpi_num_procs, int mpi_proc_id)
 
     if (!_set_selType) {
         g_selType = def_selType;
+    }
+    if (!_set_mpiVer) {
+        g_mpiVer = def_mpiVer;
     }
     switch (g_selType) {
         case BEST:
@@ -327,25 +359,43 @@ void init_globals(int mpi_num_procs, int mpi_proc_id)
     
     switch (g_funcType) {
         case GRIEWANK:
-            boundSize = GRIEW_UB + (-GRIEW_LB);
-            g_funcLB        = GRIEW_LB + boundSize/mpi_num_procs*mpi_proc_id;
-            g_funcUB        = g_funcLB + boundSize/mpi_num_procs;
+            if (g_mpiVer == MPI1)  {
+                boundSize = GRIEW_UB + (-GRIEW_LB);
+                g_funcLB        = GRIEW_LB + boundSize/mpi_num_procs*mpi_proc_id;
+                g_funcUB        = g_funcLB + boundSize/mpi_num_procs;
+            } else if (g_mpiVer == MPI2) {
+                boundSize = GRIEW_UB + (-GRIEW_LB);
+                g_funcLB        = GRIEW_LB;
+                g_funcUB        = GRIEW_UB;
+            }
             g_evalFunct     = griew_eval;
             g_revalFunct    = griew_reval;
             g_minimizeFunct = griewank;
             break;
         case ACKLEY:
-            boundSize = ACKLEY_UB + (-ACKLEY_LB);
-            g_funcLB = ACKLEY_LB + boundSize/mpi_num_procs*mpi_proc_id;
-            g_funcUB = g_funcLB + boundSize/mpi_num_procs;
+            if (g_mpiVer == MPI1)  {
+                boundSize = ACKLEY_UB + (-ACKLEY_LB);
+                g_funcLB = ACKLEY_LB + boundSize/mpi_num_procs*mpi_proc_id;
+                g_funcUB = g_funcLB + boundSize/mpi_num_procs;
+            } else if (g_mpiVer == MPI2) {
+                boundSize = ACKLEY_UB + (-ACKLEY_LB);
+                g_funcLB = ACKLEY_LB;
+                g_funcUB = ACKLEY_UB;
+            }
             g_evalFunct = ackley_eval;
             g_revalFunct    = ackley_reval;
             g_minimizeFunct = ackley;
             break;
         case KWADRATX:
-            boundSize = KWX_UB + (-KWX_LB);
-            g_funcLB        = KWX_LB + boundSize/mpi_num_procs*mpi_proc_id;
-            g_funcUB        = g_funcLB + boundSize/mpi_num_procs;
+            if (g_mpiVer == MPI1)  {
+                boundSize = KWX_UB + (-KWX_LB);
+                g_funcLB        = KWX_LB + boundSize/mpi_num_procs*mpi_proc_id;
+                g_funcUB        = g_funcLB + boundSize/mpi_num_procs;
+            } else if (g_mpiVer == MPI2) {
+                boundSize = KWX_UB + (-KWX_LB);
+                g_funcLB        = KWX_LB;
+                g_funcUB        = KWX_UB;
+            }
             g_evalFunct     = kwx_eval;
             g_revalFunct    = kwx_reval;
             g_minimizeFunct = kwadratx;
@@ -364,9 +414,10 @@ void read_params(int argc, char *argv[])
 {
     int c;
     char selCode;
+    char mpiVer;
     /*char *funcOpt;*/
 
-    while ((c = getopt(argc, argv, "hd:e:f:g:k:m:p:r:s:x:v")) != -1) {
+    while ((c = getopt(argc, argv, "hd:e:f:g:k:m:p:r:s:x:v:i:")) != -1) {
         switch (c) {
             case 'h':
                 print_help_msg();
@@ -439,6 +490,24 @@ void read_params(int argc, char *argv[])
                 }
                 _set_selType = 1;
                 break;
+            case 'i':
+                set_char_param(optarg, &mpiVer,
+                        "123", "Nieznane mpi ver");
+                switch (mpiVer) {
+                    case '1':
+                        g_mpiVer = MPI1;
+                        break;
+                    case '2':
+                        g_mpiVer = MPI2;
+                        break;
+                    case '3':
+                        g_mpiVer = MPI3;
+                        break;
+                    default:
+                        MYERR_ERR(-1, "Nieznana wersja mpi");
+                }
+                _set_mpiVer = 1;
+                break;
             case '?':
                 if (optopt == 'c')
                     MYERR_ERR(-1, "Opcja -%c wymaga argumentu.\n", optopt);
@@ -461,50 +530,53 @@ int main(int argc, char *argv[])
     int mpi_num_procs, mpi_proc_id, i;
     
     MPI_Init(&argc, &argv);
-    
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_proc_id);
     MPI_Comm_size(MPI_COMM_WORLD, &mpi_num_procs);
-
+    
     /* wczytanie parametrow */
     read_params(argc, argv);
-    /* wartości domyślen zmiennych */
-    init_globals(mpi_num_procs, mpi_proc_id);
-    grstate_seed(&grstate, g_seed);
     
-    if (mpi_proc_id == 0) {
-        if (g_VERBOSELVL > 0) {
-            print_params();
-        }
-        allResults = malloc(mpi_num_procs * sizeof(real_t));
-        startT = MPI_Wtime();
-    }
-    
-    /* alokacja pamieci */
-    /* funkcja algorytmu */
-    result = galgorithm(&grstate);
-    
-    /* zwrocenie wynikow */
-    
-    MPI_Gather(&result, 1, MPI_DOUBLE, allResults, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    
-    if (mpi_proc_id == 0) {
-        //printf("results: ");
-        real_t bestRes = DBL_MAX;
-        for (i = 0; i<mpi_num_procs; ++i) {
-            //printf("%f ", allResults[i]);
-            if (fabs(g_revalFunct(allResults[i])) < fabs(g_revalFunct(bestRes))) {
-                bestRes = allResults[i];
+    if (g_mpiVer == MPI1 || g_mpiVer == MPI2) {
+        
+        /* wartości domyślen zmiennych */
+        init_globals(mpi_num_procs, mpi_proc_id);
+        grstate_seed(&grstate, g_seed);
+        
+        if (mpi_proc_id == 0) {
+            if (g_VERBOSELVL > 0) {
+                print_params();
             }
+            allResults = malloc(mpi_num_procs * sizeof(real_t));
+            startT = MPI_Wtime();
         }
-        //printf("\n");
-        endT = MPI_Wtime();
-        printf("RESULT->%f\n", g_revalFunct(bestRes));
-        printf("TIME->%f\n", endT-startT);
-        /*printf("\nRESULT -> %f\n", result);*/
-    }
+        
+        /* alokacja pamieci */
+        /* funkcja algorytmu */
+        result = galgorithm(&grstate);
+        
+        /* zwrocenie wynikow */
     
-    if (mpi_proc_id == 0)
-        free(allResults);
+        MPI_Gather(&result, 1, MPI_DOUBLE, allResults, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        if (mpi_proc_id == 0) {
+            //printf("results: ");
+            real_t bestRes = DBL_MAX;
+            for (i = 0; i<mpi_num_procs; ++i) {
+                //printf("%f ", allResults[i]);
+                if (fabs(g_revalFunct(allResults[i])) < fabs(g_revalFunct(bestRes))) {
+                    bestRes = allResults[i];
+                }
+            }
+            //printf("\n");
+            endT = MPI_Wtime();
+            printf("RESULT->%f\n", g_revalFunct(bestRes));
+            printf("TIME->%f\n", endT-startT);
+            /*printf("\nRESULT -> %f\n", result);*/
+        }
+        
+        if (mpi_proc_id == 0)
+            free(allResults);
+    } else if (g_mpiVer == MPI3) {
+    }
     
     MPI_Finalize();
 }

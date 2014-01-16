@@ -63,8 +63,7 @@ clean:
 	rm -fv Makefile.deps
 
 cleanest: clean
-	rm -fv $(BINFOLDER)/release
-	rm -fv $(BINFOLDER)/debug
+	rm -fv $(BINFOLDER)/*
 
 # Generate dependencies for all source files using -MM switch (-M lists all deps, including a lot of the system headers)
 deps:
