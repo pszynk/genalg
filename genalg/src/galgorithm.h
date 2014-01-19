@@ -7,6 +7,8 @@
 #include "types.h"
 #include "population.h"
 #include "individual.h"
+#include <mpi.h>
+#include "chromosome.h"
 
 #define MAX_GENERATIONS (100 * 1000)
 

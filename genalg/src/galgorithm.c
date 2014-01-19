@@ -8,7 +8,7 @@ void print_gen_info(
 
 real_t galgorithm(grstate_t *grstate)
 {
-    idx_t gen, nsel;
+    idx_t gen, nsel, i, send_process_id, receive_process_id;
     real_t bestFval, f = 0, val;
     idx_t selection[g_popSize];
     indiv_t *bestOfAll, *bestOfPop, *tmpIndiv;
@@ -25,7 +25,7 @@ real_t galgorithm(grstate_t *grstate)
     for (gen = 1; gen <= g_maxGen; ++gen) {
         val = g_revalFunct(bestFval);
         /* jezeli jestesmy blisko minimum, przerwij algorytm */
-        if ((val >= EPSILON) && (val <= EPSILON)) {
+        if ((val >= -EPSILON) && (val <= EPSILON)) {
             break;
         }
         /* selection */
@@ -37,6 +37,46 @@ real_t galgorithm(grstate_t *grstate)
         pop_cross(grstate, newPop);
         /* mutation */
         pop_mut(grstate, newPop);
+        /* mix populations with other processes */
+        if (g_mpiVer == MPI3 && gen == g_maxGen/2) {
+            // pass it to the right...
+            if (g_mpiProcId == g_mpiNumProcs - 1) {
+                send_process_id = 0;
+            } else {
+                send_process_id = g_mpiProcId + 1;
+            }
+            if (g_mpiProcId == 0) {
+                receive_process_id = g_mpiNumProcs - 1;
+            } else {
+                receive_process_id = g_mpiProcId - 1;
+            }
+            
+            if (g_VERBOSELVL > 0) {
+                printf("[%d] send: %d  | receive %d\n", g_mpiProcId, send_process_id, receive_process_id);
+            
+            // send some of your population to the next process
+                printf("[%d] BEFORE:\n", g_mpiProcId);
+            }
+            for(i = 0; i < g_popSize/10; ++i) { 
+                if (g_VERBOSELVL > 0) {
+                    printf("[%d] %x   %f\n", g_mpiProcId, *(newPop->indivs[i].genotype), newPop->indivs[i].fitness);
+                }
+                MPI_Send(&*(newPop->indivs[i].genotype), sizeof(chrom_t), MPI_BYTE, send_process_id, 9998, MPI_COMM_WORLD);
+                MPI_Send(&newPop->indivs[i].fitness, sizeof(real_t), MPI_BYTE, send_process_id, 9999, MPI_COMM_WORLD);
+            }
+            
+            if (g_VERBOSELVL > 0) {
+                printf("[%d] AFTER:\n", g_mpiProcId);
+            }
+            // receive and store some of other processes population
+            for(i = 0; i < g_popSize/10; ++i) {
+                MPI_Recv(&*(newPop->indivs[i].genotype), sizeof(chrom_t), MPI_BYTE, receive_process_id, 9998, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(&newPop->indivs[i].fitness, sizeof(real_t), MPI_BYTE, receive_process_id, 9999, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                if (g_VERBOSELVL > 0) {
+                    printf("[%d] %x   %f\n", g_mpiProcId, *(newPop->indivs[i].genotype), newPop->indivs[i].fitness);
+                }
+            }
+        }
         /* evaluate */
         pop_eval(bestOfPop, newPop);
         f = indiv_eval(bestOfPop);

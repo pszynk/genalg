@@ -29,7 +29,7 @@ void pop_rand(
 {
     idx_t i;
     grstate_t _thread_grstate;
-    grstate_shift(&_thread_grstate, grstate, 0);
+    grstate_shift(&_thread_grstate, grstate, g_mpiProcId);
     for (i = 0; i < pop->popSize; ++i) {
         indiv_rand(grstate, &(pop->indivs[i]));
     }
@@ -71,7 +71,7 @@ idx_t pop_select_rulette(
     }
 
     grstate_t _thread_grstate;
-    grstate_shift(&_thread_grstate, grstate, 0);
+    grstate_shift(&_thread_grstate, grstate, g_mpiProcId);
     for (i = 0; i < size; ++i) {
         rot = RANDOM_0_TO_1(_thread_grstate.xsubi);
         j = 0;
@@ -157,7 +157,7 @@ idx_t pop_select_tournament(
         idxs[i] = i;
     }
     grstate_t _thread_grstate;
-    grstate_shift(&_thread_grstate, grstate, 0);
+    grstate_shift(&_thread_grstate, grstate, g_mpiProcId);
 
     // przeprowadź size turniejów
     for (s = 0; s < size; ++s) {
@@ -211,7 +211,7 @@ void pop_cross(
     idx_t i, ncross = 0;
     idx_t icross[pop->popSize];
     grstate_t _thread_grstate;
-    grstate_shift(&_thread_grstate, grstate, 0);
+    grstate_shift(&_thread_grstate, grstate, g_mpiProcId);
     for (i = 0; i < pop->popSize; ++i) {
         if (RANDOM_0_TO_1(_thread_grstate.xsubi) <= g_pCross) {
             icross[ncross++] = i;
@@ -232,7 +232,7 @@ void pop_mut(
 {
     idx_t i;
     grstate_t _thread_grstate;
-    grstate_shift(&_thread_grstate, grstate, 0);
+    grstate_shift(&_thread_grstate, grstate, g_mpiProcId);
     for (i = 0; i < pop->popSize; ++i) {
         indiv_mut(&_thread_grstate, &(pop->indivs[i]));
     }

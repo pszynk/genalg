@@ -46,6 +46,9 @@ idx_t g_gen,
       g_bitvecPerChrom,
       g_bitPerChrom;
 
+int g_mpiProcId,
+    g_mpiNumProcs;
+
 real_t g_funcLB,
        g_funcUB;
 
