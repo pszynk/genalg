@@ -70,7 +70,7 @@ char* indiv_to_string(
     char* chromStr = chrom_to_string(indiv->genotype);
     idx_t spLen = 0, strLen = (strlen(chromStr) + 40);
     char* str = (char*)malloc(sizeof(char) * strLen);
-    if ((spLen = sprintf(str, "{% 15.6f} -> <%s>", indiv->fitness, chromStr)) <= 0) {
+    if ((spLen = sprintf(str, "[%d] {% 15.6f} -> <%s>", g_mpiProcId, indiv->fitness, chromStr)) <= 0) {
         MYERR_ERR(-3, "Blad w funkcji individual -> string");
     }
     free(chromStr);

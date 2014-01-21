@@ -86,96 +86,97 @@ void print_help_msg()
 
 void print_params()
 {
-    int padding = 32;
-    printf("  *************************************************************\n");
-    printf("  ******************* PARAMS **********************************\n");
-    printf("  *************************************************************\n");
-    printf("\n");
-    printf(
-        "  %*s -> %u\n"
-        "  %*s -> %u\n"
-        "  %*s -> %u\n"
-        "  %*s -> %u\n"
-        "  %*s -> %f\n"
-        "  %*s -> %f\n"
-        "  %*s -> %s\n",
-        padding, "Seed", g_seed,
-        padding, "Wymiar", g_dim,
-        padding, "Maksymalna liczba generacji", g_maxGen,
-        padding, "Rozmiar populacji", g_popSize,
-        padding, "Prawd. krzyzowania", g_pCross,
-        padding, "Prawd. mutacji", g_pMut
-        );
-    switch (g_selType) {
-        case BEST:
-            printf("  %*s -> %s %d %s\n",
-                    padding,
-                    "Metoda selekcji nowej populacji",
-                    "m. wyboru",
-                    g_selParam,
-                    "najlepszych osobników"
-                    );
-            break;
-        case RULETTE:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Metoda selekcji nowej populacji","m. ruletki");
-            break;
-        case TOURNAMENT:
-            printf("  %*s -> %s %d %s\n",
-                    padding,
-                    "Metoda selekcji nowej populacji",
-                    "m. turnieju z",
-                    g_selParam,
-                    "osobników"
-                    );
-            break;
-        default:
-            printf("NIEZNANA METODA SELECKJI!\n");
-    }
-    switch (g_mpiVer) {
-        case MPI1:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Wersja MPI",
-                    "1"
-                    );
-            break;
-        case MPI2:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Wersja MPI",
-                    "2"
-                    );
-            break;
-        case MPI3:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Wersja MPI",
-                    "3"
-                    );
-            break;
-        default:
-            printf("NIEZNANA WERSJA MPI!\n");
-    }
-    switch (g_funcType) {
-        case GRIEWANK:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Funkcja do minimalziacji","f. Griewanka");
-            break;
-        case ACKLEY:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Funkcja do minimalziacji","f. Ackleya");
-            break;
-        case KWADRATX:
-            printf("  %*s -> %s\n",
-                    padding,
-                    "Funkcja do minimalziacji","f. kwadratowa");
-            break;
-        default:
-            printf("NIEZNANA FUNKCJA!\n");
+    if (g_mpiProcId == 0) {
+        int padding = 32;
+        printf("  *************************************************************\n");
+        printf("  ******************* PARAMS **********************************\n");
+        printf("  *************************************************************\n");
+        printf("\n");
+        printf(
+            "  %*s -> %u\n"
+            "  %*s -> %u\n"
+            "  %*s -> %u\n"
+            "  %*s -> %u\n"
+            "  %*s -> %f\n"
+            "  %*s -> %f\n",
+            padding, "Seed", g_seed,
+            padding, "Wymiar", g_dim,
+            padding, "Maksymalna liczba generacji", g_maxGen,
+            padding, "Rozmiar populacji", g_popSize,
+            padding, "Prawd. krzyzowania", g_pCross,
+            padding, "Prawd. mutacji", g_pMut
+            );
+        switch (g_selType) {
+            case BEST:
+                printf("  %*s -> %s %d %s\n",
+                        padding,
+                        "Metoda selekcji nowej populacji",
+                        "m. wyboru",
+                        g_selParam,
+                        "najlepszych osobników"
+                        );
+                break;
+            case RULETTE:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Metoda selekcji nowej populacji","m. ruletki");
+                break;
+            case TOURNAMENT:
+                printf("  %*s -> %s %d %s\n",
+                        padding,
+                        "Metoda selekcji nowej populacji",
+                        "m. turnieju z",
+                        g_selParam,
+                        "osobników"
+                        );
+                break;
+            default:
+                printf("NIEZNANA METODA SELECKJI!\n");
+        }
+        switch (g_mpiVer) {
+            case MPI1:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Wersja MPI",
+                        "1"
+                        );
+                break;
+            case MPI2:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Wersja MPI",
+                        "2"
+                        );
+                break;
+            case MPI3:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Wersja MPI",
+                        "3"
+                        );
+                break;
+            default:
+                printf("NIEZNANA WERSJA MPI!\n");
+        }
+        switch (g_funcType) {
+            case GRIEWANK:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Funkcja do minimalziacji","f. Griewanka");
+                break;
+            case ACKLEY:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Funkcja do minimalziacji","f. Ackleya");
+                break;
+            case KWADRATX:
+                printf("  %*s -> %s\n",
+                        padding,
+                        "Funkcja do minimalziacji","f. kwadratowa");
+                break;
+            default:
+                printf("NIEZNANA FUNKCJA!\n");
+        }
     }
 }
 
@@ -417,7 +418,7 @@ void read_params(int argc, char *argv[])
     char mpiVer;
     /*char *funcOpt;*/
 
-    while ((c = getopt(argc, argv, "hd:e:f:g:k:m:p:r:s:x:v:i:")) != -1) {
+    while ((c = getopt(argc, argv, "hd:e:f:g:k:m:p:r:s:x:vi:")) != -1) {
         switch (c) {
             case 'h':
                 print_help_msg();

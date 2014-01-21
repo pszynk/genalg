@@ -249,10 +249,12 @@ char* pop_to_string(
     if ((slen =
           sprintf(
               str,
-              "Population:\n %s = %d\n %s = %d\n %s = %f\n\t",
+              "[%d] Population:\n %s = %d\n %s = %d\n %s = %f\n\t",
+              g_mpiProcId,
               "size         ", pop->popSize,
               "generation   ", pop->genIdx,
-              "total fitness", pop->fitSum)
+              "total fitness", pop->fitSum
+                )
           ) <= 0) {
         MYERR_ERR(-3, "Blad w population -> string");
     }
