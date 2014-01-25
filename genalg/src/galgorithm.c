@@ -8,13 +8,16 @@ void print_gen_info(
 
 real_t galgorithm(grstate_t *grstate)
 {
-    idx_t gen, nsel, i, send_process_id, receive_process_id;
+    idx_t gen, nsel, i;
     real_t bestFval, f = 0, val;
     idx_t selection[g_popSize];
     indiv_t *bestOfAll, *bestOfPop, *tmpIndiv;
     popul_t *oldPop, *newPop, *tmpPop;
     chrom_t recv_genotype;
     real_t recv_fitness;
+
+    /* MPI */
+    unsigned int send_process_id, receive_process_id;
 
     bestOfAll = indiv_create(1);
     bestOfPop = indiv_create(1);
@@ -24,19 +27,26 @@ real_t galgorithm(grstate_t *grstate)
     pop_eval(bestOfAll, oldPop);
 
     bestFval = indiv_eval(bestOfAll);
+
     for (gen = 1; gen <= g_maxGen; ++gen) {
+
         val = g_revalFunct(bestFval);
-        /* jezeli jestesmy blisko minimum, przerwij algorytm */
-        if ((val >= -EPSILON) && (val <= EPSILON)) {
-            break;
-        }
+        //jezeli jestesmy blisko minimum, przerwij algorytm
+        //if ((val >= -EPSILON) && (val <= EPSILON)) {
+        //    break;
+        //}
+
         /* selection */
         nsel = g_selFunct(grstate, oldPop, selection, oldPop->popSize);
+
         /* generate new pop */
         pop_generate(newPop, oldPop, selection, nsel);
         newPop->genIdx=gen;
+
         /* mix populations with other processes */
-        if (g_mpiVer == MPI3 && gen == g_maxGen/2) {
+        if (g_mpiVer == MPI3
+                && gen == g_maxGen/2) {
+
             // pass it to the right...
             send_process_id = (g_mpiProcId + 1)%g_mpiNumProcs;
             if (g_mpiProcId == 0) {
@@ -44,25 +54,42 @@ real_t galgorithm(grstate_t *grstate)
             } else {
                 receive_process_id = g_mpiProcId - 1;
             }
-            
+
             if (g_VERBOSELVL > 0) {
-                printf("[%d] send: %d  | receive %d\n", g_mpiProcId, send_process_id, receive_process_id);
+                printf("[%d] send: %d  | receive %d\n", g_mpiProcId,
+                        send_process_id, receive_process_id);
             }
+
             // send some of your population to the next process
             for (i = 0; i < nsel/2; ++i) {
                 if (g_VERBOSELVL > 0) {
-                    printf("[%d] %x   %f\n", g_mpiProcId, *(newPop->indivs[selection[i]].genotype), newPop->indivs[selection[i]].fitness);
+                    printf("[%d] %x   %f\n",
+                            g_mpiProcId, *(newPop->indivs[selection[i]].genotype),
+                            newPop->indivs[selection[i]].fitness);
                 }
-                MPI_Send(&*(newPop->indivs[selection[i]].genotype), sizeof(chrom_t), MPI_BYTE, send_process_id, 9998, MPI_COMM_WORLD);
-                MPI_Send(&newPop->indivs[selection[i]].fitness, sizeof(real_t), MPI_BYTE, send_process_id, 9999, MPI_COMM_WORLD);
+
+                MPI_Send(&*(newPop->indivs[selection[i]].genotype),
+                        sizeof(chrom_t), MPI_BYTE, send_process_id,
+                        1, MPI_COMM_WORLD);
+                MPI_Send(&newPop->indivs[selection[i]].fitness,
+                        sizeof(real_t), MPI_BYTE, send_process_id,
+                        1, MPI_COMM_WORLD);
             }
-            
+
             // receive and store some of other processes populations better individuals
             for(i = 0; i < nsel/2; ++i) {
-                MPI_Recv(&recv_genotype, sizeof(chrom_t), MPI_BYTE, receive_process_id, 9998, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                MPI_Recv(&recv_fitness, sizeof(real_t), MPI_BYTE, receive_process_id, 9999, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(&recv_genotype, sizeof(chrom_t),
+                        MPI_BYTE, receive_process_id, 1,
+                        MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(&recv_fitness, sizeof(real_t),
+                        MPI_BYTE, receive_process_id, 1,
+                        MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
                 if (g_VERBOSELVL > 0) {
-                    printf("[%d] fit: %f | %f | gen: %x | %x\n", g_mpiProcId, newPop->indivs[i].fitness, recv_fitness, &*(newPop->indivs[i].genotype), &recv_genotype);
+                    printf("[%d] fit: %f | %f | gen: %x | %x\n",
+                            g_mpiProcId, newPop->indivs[i].fitness,
+                            recv_fitness, &*(newPop->indivs[i].genotype),
+                            &recv_genotype);
                 }
                 if (newPop->indivs[i].fitness < recv_fitness) {
                     newPop->indivs[i].fitness = recv_fitness;
@@ -70,6 +97,7 @@ real_t galgorithm(grstate_t *grstate)
                 }
             }
         }
+
         /* crossover */
         pop_cross(grstate, newPop);
         /* mutation */

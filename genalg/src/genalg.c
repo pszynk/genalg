@@ -354,18 +354,18 @@ void init_globals()
 
     g_bitvecPerChrom = g_dim;
     g_bitPerChrom    = g_bitvecPerChrom * BIT_PER_BITVEC;
-    
+
     //podzial dziedziny dla procesow
     real_t boundSize;
-    
+
     switch (g_funcType) {
         case GRIEWANK:
             if (g_mpiVer == MPI1)  {
-                boundSize = GRIEW_UB + (-GRIEW_LB);
+                boundSize = GRIEW_UB - GRIEW_LB;
                 g_funcLB        = GRIEW_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
                 g_funcUB        = g_funcLB + boundSize/g_mpiNumProcs;
             } else if (g_mpiVer == MPI2 || g_mpiVer == MPI3) {
-                boundSize = GRIEW_UB + (-GRIEW_LB);
+                boundSize = GRIEW_UB - GRIEW_LB;
                 g_funcLB        = GRIEW_LB;
                 g_funcUB        = GRIEW_UB;
             }
@@ -375,11 +375,11 @@ void init_globals()
             break;
         case ACKLEY:
             if (g_mpiVer == MPI1)  {
-                boundSize = ACKLEY_UB + (-ACKLEY_LB);
+                boundSize = ACKLEY_UB - ACKLEY_LB;
                 g_funcLB = ACKLEY_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
                 g_funcUB = g_funcLB + boundSize/g_mpiNumProcs;
             } else if (g_mpiVer == MPI2 || g_mpiVer == MPI3) {
-                boundSize = ACKLEY_UB + (-ACKLEY_LB);
+                boundSize = ACKLEY_UB - ACKLEY_LB;
                 g_funcLB = ACKLEY_LB;
                 g_funcUB = ACKLEY_UB;
             }
@@ -389,11 +389,11 @@ void init_globals()
             break;
         case KWADRATX:
             if (g_mpiVer == MPI1)  {
-                boundSize = KWX_UB + (-KWX_LB);
+                boundSize = KWX_UB - KWX_LB;
                 g_funcLB        = KWX_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
                 g_funcUB        = g_funcLB + boundSize/g_mpiNumProcs;
             } else if (g_mpiVer == MPI2 || g_mpiVer == MPI3) {
-                boundSize = KWX_UB + (-KWX_LB);
+                boundSize = KWX_UB - KWX_LB;
                 g_funcLB        = KWX_LB;
                 g_funcUB        = KWX_UB;
             }
@@ -406,7 +406,7 @@ void init_globals()
                     "Nieznana funkcja do minimalziacji");
 
     }
-    
+
     if (g_VERBOSELVL) {
         printf("[%d] b %f l %f u%f\n", g_mpiProcId, boundSize, g_funcLB, g_funcUB);
     }
@@ -529,18 +529,18 @@ int main(int argc, char *argv[])
     real_t *allResults = NULL;
     grstate_t grstate;
     int i;
-    
+
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &g_mpiProcId);
     MPI_Comm_size(MPI_COMM_WORLD, &g_mpiNumProcs);
-    
+
     /* wczytanie parametrow */
     read_params(argc, argv);
-        
+
     /* wartości domyślne zmiennych */
     init_globals();
     grstate_seed(&grstate, g_seed);
-    
+
     if (g_mpiProcId == 0) {
         if (g_VERBOSELVL > 0) {
             print_params();
@@ -548,11 +548,11 @@ int main(int argc, char *argv[])
         allResults = malloc(g_mpiNumProcs * sizeof(real_t));
         startT = MPI_Wtime();
     }
-    
+
     /* alokacja pamieci */
     /* funkcja algorytmu */
     result = galgorithm(&grstate);
-    
+
     /* zwrocenie wynikow */
 
     MPI_Gather(&result, 1, MPI_DOUBLE, allResults, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -571,9 +571,9 @@ int main(int argc, char *argv[])
         printf("TIME->%f\n", endT-startT);
         /*printf("\nRESULT -> %f\n", result);*/
     }
-    
+
     if (g_mpiProcId == 0)
         free(allResults);
-    
+
     MPI_Finalize();
 }
