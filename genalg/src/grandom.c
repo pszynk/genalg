@@ -18,7 +18,7 @@ void grstate_seed(
         grstate_t *grstate,
         unsigned int seed)
 {
-    unsigned short xsubi[0];
+    unsigned short xsubi[3];
     xsubi[0] = seed;
     xsubi[1] = seed >> (CHAR_BIT * (sizeof(unsigned short)));
     xsubi[2] = __MAGIC_NUMBER3;

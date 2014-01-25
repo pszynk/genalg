@@ -17,9 +17,9 @@ enum Selections {
 };
 
 enum MpiVer {
-    MPI1,
-    MPI2,
-    MPI3,
+    VMPI1,
+    VMPI2,
+    VMPI3,
 };
 
 int g_VERBOSELVL;
@@ -30,7 +30,10 @@ unsigned int g_seed;
 idx_t g_dim,
       g_maxGen,
       g_popSize,
-      g_selParam;
+      g_selParam,
+      /* MPI */
+      g_mpi3MigSize,
+      g_mpi3Interval;
 
 real_t g_pCross,
        g_pMut;

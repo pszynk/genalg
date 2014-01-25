@@ -68,6 +68,13 @@ void pop_mut(
         grstate_t *grstate,
         popul_t *pop);
 
+idx_t pop_find_best_or_worst(
+        idx_t bwkcount,
+        char  best,
+        const popul_t *pop,
+        idx_t *selection,
+        idx_t size);
+
 idx_t pop_select_rulette(
         grstate_t *grstate,
         const popul_t *pop,

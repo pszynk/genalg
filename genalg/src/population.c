@@ -54,6 +54,71 @@ void pop_eval(indiv_t *bestOne, popul_t *pop)
     indiv_copy(bestOne, &(pop->indivs[bestIdx]));
 }
 
+idx_t pop_find_best_or_worst(
+        idx_t bwkcount,
+        char  best,
+        const popul_t *pop,
+        idx_t *selection,
+        idx_t size)
+{
+    idx_t idxs[pop->popSize];
+    int i, kcount, from = 0, to = pop->popSize - 1,
+          tmp;
+    int right, left;
+    real_t split, fit;
+
+    bwkcount = fmin(bwkcount, pop->popSize);
+    kcount = bwkcount;
+    if (!best) {
+        kcount = pop->popSize - kcount;
+    }
+
+    if (kcount == 0) return 0;
+
+    for (i = 0; i < pop->popSize; ++i) {
+        idxs[i] = i;
+    }
+
+    while(from < to) {
+        left = from;
+        right = to;
+        split = pop->indivs[idxs[(left + right) / 2]].fitness;
+
+        while (left < right) {
+            fit = pop->indivs[idxs[left]].fitness;
+            if (fit <= split) {
+                tmp = idxs[right];
+                idxs[right] = idxs[left];
+                idxs[left] = tmp;
+                --right;
+            } else {
+                ++left;
+            }
+        }
+
+        if (pop->indivs[idxs[left]].fitness < split) {
+            --left;
+        }
+
+        if (kcount <= left) {
+            to = left;
+        } else {
+            from = left + 1;
+        }
+    }
+
+    if (best) {
+        for (i = 0; i < size; ++i) {
+            selection[i] = idxs[i % bwkcount];
+        }
+    } else {
+        for (i = 0; i < size; ++i) {
+            selection[i] = idxs[(i % bwkcount) + kcount - 1];
+        }
+    }
+
+    return size;
+}
 
 idx_t pop_select_rulette(
         grstate_t *grstate,
@@ -91,51 +156,53 @@ idx_t pop_select_best(
         idx_t size)
 {
     idx_t kbest = g_selParam;
-    idx_t idxs[pop->popSize];
-    int i, from = 0, to = pop->popSize - 1,
-          tmp;
-    int right, left;
-    real_t split, fit;
-    kbest = fmin(kbest, pop->popSize);
+    return pop_find_best_or_worst(kbest, 1, pop, selection, size);
+    /*idx_t idxs[pop->popSize];*/
+    /*int i, from = 0, to = pop->popSize - 1,*/
+          /*tmp;*/
+    /*int right, left;*/
+    /*real_t split, fit;*/
+    /*kbest = fmin(kbest, pop->popSize);*/
 
-    for (i = 0; i < pop->popSize; ++i) {
-        idxs[i] = i;
-    }
+    /*for (i = 0; i < pop->popSize; ++i) {*/
+        /*idxs[i] = i;*/
+    /*}*/
 
-    while(from < to) {
-        left = from;
-        right = to;
-        split = pop->indivs[idxs[(left + right) / 2]].fitness;
+    /*while(from < to) {*/
+        /*left = from;*/
+        /*right = to;*/
+        /*split = pop->indivs[idxs[(left + right) / 2]].fitness;*/
 
-        while (left < right) {
-            fit = pop->indivs[idxs[left]].fitness;
-            if (fit <= split) {
-                tmp = idxs[right];
-                idxs[right] = idxs[left];
-                idxs[left] = tmp;
-                --right;
-            } else {
-                ++left;
-            }
-        }
+        /*while (left < right) {*/
+            /*fit = pop->indivs[idxs[left]].fitness;*/
+            /*if (fit <= split) {*/
+                /*tmp = idxs[right];*/
+                /*idxs[right] = idxs[left];*/
+                /*idxs[left] = tmp;*/
+                /*--right;*/
+            /*} else {*/
+                /*++left;*/
+            /*}*/
+        /*}*/
 
-        if (pop->indivs[idxs[left]].fitness < split) {
-            --left;
-        }
+        /*if (pop->indivs[idxs[left]].fitness < split) {*/
+            /*--left;*/
+        /*}*/
 
-        if (kbest <= left) {
-            to = left;
-        } else {
-            from = left + 1;
-        }
-    }
+        /*if (kbest <= left) {*/
+            /*to = left;*/
+        /*} else {*/
+            /*from = left + 1;*/
+        /*}*/
+    /*}*/
 
-    for (i = 0; i < size; ++i) {
-        selection[i] = idxs[i % kbest];
-    }
+    /*for (i = 0; i < size; ++i) {*/
+        /*selection[i] = idxs[i % kbest];*/
+    /*}*/
 
-    return size;
+    /*return size;*/
 }
+
 
 idx_t pop_select_tournament(
         grstate_t *grstate,
@@ -150,7 +217,7 @@ idx_t pop_select_tournament(
     }
     idx_t bestIdx = 0;
     real_t bestFit = -1;
-    
+
     idx_t i, s;
     idx_t idxs[pop->popSize];
     for (i = 0; i < pop->popSize; ++i) {
