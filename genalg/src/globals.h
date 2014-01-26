@@ -19,7 +19,7 @@ enum Selections {
 enum MpiVer {
     VMPI1,
     VMPI2,
-    VMPI3,
+    //VMPI3,
 };
 
 int g_VERBOSELVL;

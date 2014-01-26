@@ -9,7 +9,7 @@ void print_gen_info(
 real_t galgorithm(grstate_t *grstate)
 {
     idx_t gen, nsel, i;
-    real_t bestFval, f = 0, val;
+    real_t bestFval, f = 0;
     idx_t selection[g_popSize];
     indiv_t *bestOfAll, *bestOfPop, *tmpIndiv;
     popul_t *oldPop, *newPop, *tmpPop;
@@ -31,7 +31,7 @@ real_t galgorithm(grstate_t *grstate)
     idx_t _mpi_outSelection[g_mpi3MigSize],
           _mpi_inSelection[g_mpi3MigSize];
 
-    if (g_mpiVer == VMPI3) {
+    if (g_mpiVer == VMPI2) {
         _mpi_recGen = chrom_create();
     }
     /* MPI end */
@@ -48,8 +48,6 @@ real_t galgorithm(grstate_t *grstate)
 
     for (gen = 1; gen <= g_maxGen; ++gen) {
 
-        val = g_revalFunct(bestFval);
-
         /* selection */
         nsel = g_selFunct(grstate, oldPop, selection, oldPop->popSize);
 
@@ -58,7 +56,7 @@ real_t galgorithm(grstate_t *grstate)
         newPop->genIdx=gen;
 
         /* mix populations with other processes */
-        if (g_mpiVer == VMPI3
+        if (g_mpiVer == VMPI2
                 && !(gen % g_mpi3Interval)) {
 
 
@@ -153,7 +151,7 @@ real_t galgorithm(grstate_t *grstate)
     pop_destroy(newPop);
 
     /* MPI */
-    if (g_mpiVer == VMPI3) {
+    if (g_mpiVer == VMPI2) {
         chrom_destroy(_mpi_recGen);
     }
 

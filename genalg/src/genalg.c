@@ -63,7 +63,7 @@ char *_progargs[_PROGARGN][3] =
         {"-x[p]    ", "Prawd. krzyżowania dwóch osobników", " 0.2"},
         {"-s[R|T|B]", "Metoda selekcji osobników         ", "   B"},
         {"-f[GR|AC]", "Funkcja do minimalizacji          ", "  GR"},
-        {"-i[1|2|3]", "Wersja MPI                        ", "   1"},
+        {"-i[1|2]", "Wersja MPI                        ", "   1"},
         {"-t[N]    ", "Interwał migracji genotypów       ", "  20"},
         {"-o[N]    ", "Rozmiar migracji genotypów        ", "   2"},
     };
@@ -145,18 +145,18 @@ void print_params()
                         "1"
                         );
                 break;
+            //case VMPI2:
+            //    printf("  %*s -> %s\n",
+            //            padding,
+            //            "Wersja MPI",
+            //            "2"
+            //            );
+            //    break;
             case VMPI2:
-                printf("  %*s -> %s\n",
-                        padding,
-                        "Wersja MPI",
-                        "2"
-                        );
-                break;
-            case VMPI3:
                 printf( "  %*s -> %s\n"
                         "  %*s -> %u\n"
                         "  %*s -> %u\n",
-                        padding, "Wersja MPI", "3",
+                        padding, "Wersja MPI", "2",
                         padding, "Interwal", g_mpi3Interval,
                         padding, "Rozmiar migracji", g_mpi3MigSize
                         );
@@ -381,43 +381,43 @@ void init_globals()
 
     switch (g_funcType) {
         case GRIEWANK:
-            if (g_mpiVer == VMPI1)  {
-                boundSize = GRIEW_UB - GRIEW_LB;
-                g_funcLB        = GRIEW_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
-                g_funcUB        = g_funcLB + boundSize/g_mpiNumProcs;
-            } else if (g_mpiVer == VMPI2 || g_mpiVer == VMPI3) {
+            //if (g_mpiVer == VMPI1)  {
+            //    boundSize = GRIEW_UB - GRIEW_LB;
+            //    g_funcLB        = GRIEW_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
+            //    g_funcUB        = g_funcLB + boundSize/g_mpiNumProcs;
+            //} else if (g_mpiVer == VMPI2 || g_mpiVer == VMPI3) {
                 boundSize = GRIEW_UB - GRIEW_LB;
                 g_funcLB        = GRIEW_LB;
                 g_funcUB        = GRIEW_UB;
-            }
+            //}
             g_evalFunct     = griew_eval;
             g_revalFunct    = griew_reval;
             g_minimizeFunct = griewank;
             break;
         case ACKLEY:
-            if (g_mpiVer == VMPI1)  {
-                boundSize = ACKLEY_UB - ACKLEY_LB;
-                g_funcLB = ACKLEY_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
-                g_funcUB = g_funcLB + boundSize/g_mpiNumProcs;
-            } else if (g_mpiVer == VMPI2 || g_mpiVer == VMPI3) {
+            //if (g_mpiVer == VMPI1)  {
+            //    boundSize = ACKLEY_UB - ACKLEY_LB;
+            //    g_funcLB = ACKLEY_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
+            //    g_funcUB = g_funcLB + boundSize/g_mpiNumProcs;
+            //} else if (g_mpiVer == VMPI2 || g_mpiVer == VMPI3) {
                 boundSize = ACKLEY_UB - ACKLEY_LB;
                 g_funcLB = ACKLEY_LB;
                 g_funcUB = ACKLEY_UB;
-            }
+            //}
             g_evalFunct = ackley_eval;
             g_revalFunct    = ackley_reval;
             g_minimizeFunct = ackley;
             break;
         case KWADRATX:
-            if (g_mpiVer == VMPI1)  {
-                boundSize = KWX_UB - KWX_LB;
-                g_funcLB        = KWX_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
-                g_funcUB        = g_funcLB + boundSize/g_mpiNumProcs;
-            } else if (g_mpiVer == VMPI2 || g_mpiVer == VMPI3) {
+            //if (g_mpiVer == VMPI1)  {
+            //    boundSize = KWX_UB - KWX_LB;
+            //    g_funcLB        = KWX_LB + boundSize/g_mpiNumProcs*g_mpiProcId;
+            //    g_funcUB        = g_funcLB + boundSize/g_mpiNumProcs;
+            //} else if (g_mpiVer == VMPI2 || g_mpiVer == VMPI3) {
                 boundSize = KWX_UB - KWX_LB;
                 g_funcLB        = KWX_LB;
                 g_funcUB        = KWX_UB;
-            }
+            //}
             g_evalFunct     = kwx_eval;
             g_revalFunct    = kwx_reval;
             g_minimizeFunct = kwadratx;
@@ -514,7 +514,8 @@ void read_params(int argc, char *argv[])
                 break;
             case 'i':
                 set_char_param(optarg, &mpiVer,
-                        "123", "Nieznane mpi ver");
+                        //"123", "Nieznane mpi ver");
+                        "12", "Nieznane mpi ver");
                 switch (mpiVer) {
                     case '1':
                         g_mpiVer = VMPI1;
@@ -522,9 +523,9 @@ void read_params(int argc, char *argv[])
                     case '2':
                         g_mpiVer = VMPI2;
                         break;
-                    case '3':
-                        g_mpiVer = VMPI3;
-                        break;
+                    //case '3':
+                    //    g_mpiVer = VMPI3;
+                    //    break;
                     default:
                         MYERR_ERR(-1, "Nieznana wersja mpi");
                 }
