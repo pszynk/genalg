@@ -108,7 +108,7 @@ mpidebug: EXENAME 	:= mpidebug
 mpidebug: build
 
 mpirelease: CXX			:= mpicc
-#omprelease: CXXFLAGS	+= -O2
+omprelease: CXXFLAGS	+= -O2
 mpirelease: EXENAME		:= mpirelease
 mpirelease: build
 

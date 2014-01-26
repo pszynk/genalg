@@ -1,0 +1,208 @@
+2 gr, ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 5 -p 500 -i 1 -t 10 -o 10
+RESULT->1.082038
+TIME->0.132902
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 10 -p 2000 -i 1 -t 10 -o 10
+RESULT->2.793867
+TIME->1.297050
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 20 -p 3000 -i 1 -t 10 -o 10
+RESULT->33.941751
+TIME->3.308936
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 50 -p 5000 -i 1 -t 10 -o 10
+RESULT->183.990427
+TIME->11.666015
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 10000 -i 1 -t 10 -o 10
+RESULT->689.712194
+TIME->46.026555
+4 gr, ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 5 -p 500 -i 1 -t 10 -o 10
+RESULT->0.886920
+TIME->0.135333
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 10 -p 2000 -i 1 -t 10 -o 10
+RESULT->4.744167
+TIME->1.277041
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 20 -p 3000 -i 1 -t 10 -o 10
+RESULT->24.782991
+TIME->3.314189
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 50 -p 5000 -i 1 -t 10 -o 10
+RESULT->235.203736
+TIME->11.776697
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 10000 -i 1 -t 10 -o 10
+RESULT->689.488020
+TIME->46.486863
+2 ac, ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 5 -p 500 -i 1 -t 10 -o 10
+RESULT->0.722399
+TIME->0.135403
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 10 -p 2000 -i 1 -t 10 -o 10
+RESULT->4.051092
+TIME->1.288237
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 20 -p 3000 -i 1 -t 10 -o 10
+RESULT->11.171299
+TIME->3.376581
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 50 -p 5000 -i 1 -t 10 -o 10
+RESULT->20.479192
+TIME->12.055765
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 10000 -i 1 -t 10 -o 10
+RESULT->20.897991
+TIME->47.770224
+4 ac, ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 5 -p 500 -i 1 -t 10 -o 10
+RESULT->1.887943
+TIME->0.161928
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 10 -p 2000 -i 1 -t 10 -o 10
+RESULT->3.866375
+TIME->1.299819
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 20 -p 3000 -i 1 -t 10 -o 10
+RESULT->11.355726
+TIME->3.361779
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 50 -p 5000 -i 1 -t 10 -o 10
+RESULT->20.284574
+TIME->12.201976
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 10000 -i 1 -t 10 -o 10
+RESULT->20.876583
+TIME->48.918883
+2 gr, pomniejszone ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 5 -p 250 -i 1 -t 10 -o 10
+RESULT->1.347601
+TIME->0.058249
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 10 -p 1000 -i 1 -t 10 -o 10
+RESULT->4.861098
+TIME->0.499174
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 20 -p 1500 -i 1 -t 10 -o 10
+RESULT->32.827295
+TIME->1.348570
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 50 -p 2500 -i 1 -t 10 -o 10
+RESULT->242.375882
+TIME->5.022703
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 5000 -i 1 -t 10 -o 10
+RESULT->727.449693
+TIME->19.636371
+4 gr, pomniejszone ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 5 -p 125 -i 1 -t 10 -o 10
+RESULT->1.766782
+TIME->0.031284
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 10 -p 500 -i 1 -t 10 -o 10
+RESULT->5.831068
+TIME->0.219197
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 20 -p 750 -i 1 -t 10 -o 10
+RESULT->38.313065
+TIME->0.767254
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 50 -p 1250 -i 1 -t 10 -o 10
+RESULT->247.768815
+TIME->2.298973
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 2500 -i 1 -t 10 -o 10
+RESULT->667.521271
+TIME->8.981426
+2 ac, pomniejszone ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 5 -p 250 -i 1 -t 10 -o 10
+RESULT->1.958447
+TIME->0.062134
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 10 -p 1000 -i 1 -t 10 -o 10
+RESULT->4.266469
+TIME->0.515112
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 20 -p 1500 -i 1 -t 10 -o 10
+RESULT->12.806018
+TIME->1.371369
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 50 -p 2500 -i 1 -t 10 -o 10
+RESULT->20.113655
+TIME->5.199626
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 5000 -i 1 -t 10 -o 10
+RESULT->20.957392
+TIME->20.644240
+4 ac, pomniejszone ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 5 -p 125 -i 1 -t 10 -o 10
+RESULT->2.050907
+TIME->0.028488
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 10 -p 500 -i 1 -t 10 -o 10
+RESULT->4.952203
+TIME->0.231177
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 20 -p 750 -i 1 -t 10 -o 10
+RESULT->11.746725
+TIME->0.615955
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 50 -p 1250 -i 1 -t 10 -o 10
+RESULT->20.322478
+TIME->2.395824
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 2500 -i 1 -t 10 -o 10
+RESULT->20.937440
+TIME->9.547824
+2 gr, migracja,  ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->730.978309
+TIME->19.645447
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->589.745175
+TIME->45.771971
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->679.610991
+TIME->117.442365
+4 gr, migracja,  ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->705.089607
+TIME->19.764719
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->611.084004
+TIME->46.365729
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->640.667283
+TIME->119.632093
+2 ac, migracja,  ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->20.994767
+TIME->20.565576
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->20.866452
+TIME->47.629223
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->20.794272
+TIME->122.202013
+4 ac, migracja,  ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->20.885622
+TIME->20.800013
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->20.844967
+TIME->48.310341
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->20.875422
+TIME->123.544090
+2 gr, migracja bset,  ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->175.065865
+TIME->16.147636
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->175.371804
+TIME->32.615555
+mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->172.095426
+TIME->66.098178
+4 gr, migracja bset,  ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->175.954465
+TIME->16.269300
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->162.569544
+TIME->32.901645
+mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->164.294579
+TIME->65.596751
+2 ac, migracja bset,  ----------------------------------------------------------
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->17.902357
+TIME->17.254319
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->17.623070
+TIME->34.753341
+mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->17.797440
+TIME->71.555509
+4 ac, migracja bset,  ----------------------------------------------------------
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
+RESULT->18.016479
+TIME->17.392726
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 10000 -i 2 -t 15 -o 10
+RESULT->18.130176
+TIME->35.662895
+mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
+RESULT->17.914087
+TIME->70.135220
