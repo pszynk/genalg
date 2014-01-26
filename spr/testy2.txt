@@ -30,6 +30,8 @@ TIME->11.776697
 mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 10000 -i 1 -t 10 -o 10
 RESULT->689.488020
 TIME->46.486863
+
+
 2 ac, ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 5 -p 500 -i 1 -t 10 -o 10
 RESULT->0.722399
@@ -62,6 +64,9 @@ TIME->12.201976
 mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 10000 -i 1 -t 10 -o 10
 RESULT->20.876583
 TIME->48.918883
+
+
+
 2 gr, pomniejszone ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 5 -p 250 -i 1 -t 10 -o 10
 RESULT->1.347601
@@ -94,6 +99,7 @@ TIME->2.298973
 mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 2500 -i 1 -t 10 -o 10
 RESULT->667.521271
 TIME->8.981426
+
 2 ac, pomniejszone ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 5 -p 250 -i 1 -t 10 -o 10
 RESULT->1.958447
@@ -126,6 +132,8 @@ TIME->2.395824
 mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 2500 -i 1 -t 10 -o 10
 RESULT->20.937440
 TIME->9.547824
+
+
 2 gr, migracja,  ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
 RESULT->730.978309
@@ -146,6 +154,8 @@ TIME->46.365729
 mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s R -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
 RESULT->640.667283
 TIME->119.632093
+
+
 2 ac, migracja,  ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
 RESULT->20.994767
@@ -166,6 +176,8 @@ TIME->48.310341
 mpiexec -n 4 ../genalg/bin/mpirelease -f AC -s R -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
 RESULT->20.875422
 TIME->123.544090
+
+
 2 gr, migracja bset,  ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
 RESULT->175.065865
@@ -186,6 +198,7 @@ TIME->32.901645
 mpiexec -n 4 ../genalg/bin/mpirelease -f GR -s B -g 100 -d 100 -p 20000 -i 2 -t 15 -o 10
 RESULT->164.294579
 TIME->65.596751
+
 2 ac, migracja bset,  ----------------------------------------------------------
 mpiexec -n 2 ../genalg/bin/mpirelease -f AC -s B -g 100 -d 100 -p 5000 -i 2 -t 15 -o 10
 RESULT->17.902357
