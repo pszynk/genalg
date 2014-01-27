@@ -126,17 +126,17 @@ fi
 #exetest 4 2 15 10 "AC" "B" 100 100 5000
 #exetest 4 2 15 10 "AC" "B" 100 100 10000
 #exetest 4 2 15 10 "AC" "B" 100 100 20000
-echo "4 gr, migracja wzrost interwalu,  ----------------------------------------------------------"
-exetest 4 2 1 10 "GR" "B" 200 100 2000
-exetest 4 2 2 10 "GR" "B" 200 100 2000
-exetest 4 2 5 10 "GR" "B" 200 100 2000
-exetest 4 2 10 10 "GR" "B" 200 100 2000
-exetest 4 2 15 10 "GR" "B" 200 100 2000
-exetest 4 2 25 10 "GR" "B" 200 100 2000
-exetest 4 2 40 10 "GR" "B" 200 100 2000
-exetest 4 2 60 10 "GR" "B" 200 100 2000
-exetest 4 2 80 10 "GR" "B" 200 100 2000
-exetest 4 2 100 10 "GR" "B" 200 100 2000
+#echo "4 gr, migracja wzrost interwalu,  ----------------------------------------------------------"
+#exetest 4 2 1 10 "GR" "B" 200 100 2000
+#exetest 4 2 2 10 "GR" "B" 200 100 2000
+#exetest 4 2 5 10 "GR" "B" 200 100 2000
+#exetest 4 2 10 10 "GR" "B" 200 100 2000
+#exetest 4 2 15 10 "GR" "B" 200 100 2000
+#exetest 4 2 25 10 "GR" "B" 200 100 2000
+#exetest 4 2 40 10 "GR" "B" 200 100 2000
+#exetest 4 2 60 10 "GR" "B" 200 100 2000
+#exetest 4 2 80 10 "GR" "B" 200 100 2000
+#exetest 4 2 100 10 "GR" "B" 200 100 2000
 
 echo "4 gr, migracja wzrost liczby,  ----------------------------------------------------------"
 exetest 4 2 15 1 "GR" "B" 200 100 2000
